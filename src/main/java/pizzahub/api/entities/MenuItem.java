@@ -21,9 +21,9 @@ public class MenuItem {
     private BigDecimal price;
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name="id_ingredient")
-    private Set<Ingredient> ingredients;
+    // @ManyToOne
+    // @JoinColumn(name="id_ingredient")
+    // private Set<Ingredient> ingredients;
 
     public MenuItem() {}
 }

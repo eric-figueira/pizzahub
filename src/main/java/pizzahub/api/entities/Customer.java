@@ -1,5 +1,7 @@
 package pizzahub.api.entities;
 
+import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,8 +13,8 @@ import pizzahub.api.utils.RegexValidator;
 @Table(name = "customers")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String fullname;
 
@@ -28,7 +30,7 @@ public class Customer {
 
     public Customer() {}
 
-    public Long getId() { return this.id; }
+    public UUID getId() { return this.id; }
     public String getFullname() { return this.fullname; }
     public String getCpf() { return this.cpf; }
     public String getEmail() { return this.email; }
@@ -37,8 +39,8 @@ public class Customer {
     public String getHouseNumber() { return this.houseNumber; }
     public String getHouseComplement() { return this.houseComplement; }
 
-    public void setId(Long id) throws Exception {
-        if (id <= 0L) {
+    public void setId(UUID id) throws Exception {
+        if (id.toString().isEmpty()) {
             throw new IllegalArgumentException("[Customer]: Id cannot be null or empty");
         }
         this.id = id;
@@ -109,7 +111,7 @@ public class Customer {
         int ret = 23,
             k = 11;
 
-        ret += k * ret + Long.valueOf(this.id).hashCode();
+        ret += k * ret + this.id.hashCode();
         ret += k * ret + String.valueOf(this.fullname).hashCode();
         ret += k * ret + String.valueOf(this.cpf).hashCode();
         ret += k * ret + String.valueOf(this.email).hashCode();

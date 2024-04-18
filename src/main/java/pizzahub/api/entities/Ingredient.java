@@ -19,9 +19,9 @@ public class Ingredient {
 
     private String name;
 
-    @ManyToMany
-    @JoinColumn(name = "id_menu_item")
-    private Set<MenuItem> menuitems;
+    // @ManyToMany
+    // @JoinColumn(name = "id_menu_item")
+    // private Set<MenuItem> menuitems;
 
     public Ingredient() {}
 }
