@@ -1,6 +1,6 @@
 package pizzahub.api.entities.enums;
 
-public enum Roles {
+public enum Role {
     OWNER,
     ADMINISTRATOR,
     MANAGER,

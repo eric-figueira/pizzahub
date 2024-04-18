@@ -29,7 +29,7 @@ public class Ingredient {
     private String name;
 
     @ManyToMany
-    @JoinColumn(name = "id_menu_item")
+    @JoinColumn(name = "id")
     private Set<MenuItem> menuItems;
 
     public void setId(Long id) throws Exception {

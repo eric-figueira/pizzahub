@@ -31,7 +31,7 @@ public class MenuItem {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="id_ingredient")
+    @JoinColumn(name="id")
     private Set<Ingredient> ingredients;
 
     public void setId(Long id) throws Exception {
