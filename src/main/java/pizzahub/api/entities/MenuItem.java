@@ -11,6 +11,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "menu_items")
 public class MenuItem {
@@ -21,9 +30,30 @@ public class MenuItem {
     private BigDecimal price;
     private String name;
 
-    // @ManyToOne
-    // @JoinColumn(name="id_ingredient")
-    // private Set<Ingredient> ingredients;
+    @ManyToOne
+    @JoinColumn(name="id_ingredient")
+    private Set<Ingredient> ingredients;
 
-    public MenuItem() {}
+    public void setId(Long id) throws Exception {
+        if (id.toString().isEmpty()) {
+            throw new IllegalArgumentException("[Menu Item]: Id cannot be null or empty");
+        }
+        this.id = id;
+    }
+
+    public void setPrice(BigDecimal price) throws Exception {
+        if (price.signum() == -1) {
+            throw new IllegalArgumentException("[Menu Item]: Price cannot be lower than zero");
+        }
+        this.price = price;
+    }
+
+    public void setName(String name) throws Exception {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Menu Item]: Name cannot be null or empty");
+        }
+        this.name = name;
+    }
+
+    // public MenuItem() {}
 }

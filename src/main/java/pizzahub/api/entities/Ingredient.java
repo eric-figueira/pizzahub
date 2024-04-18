@@ -10,6 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import lombok.Getter;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Getter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "ingredients")
 public class Ingredient {
@@ -19,9 +28,23 @@ public class Ingredient {
 
     private String name;
 
-    // @ManyToMany
-    // @JoinColumn(name = "id_menu_item")
-    // private Set<MenuItem> menuitems;
+    @ManyToMany
+    @JoinColumn(name = "id_menu_item")
+    private Set<MenuItem> menuItems;
 
-    public Ingredient() {}
+    public void setId(Long id) throws Exception {
+        if (id.toString().isEmpty()) {
+            throw new IllegalArgumentException("[Ingredient]: Id cannot be null or empty");
+        }
+        this.id = id;
+    }
+
+    public void setName(String name) throws Exception {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Ingredient]: Name cannot be null or empty");
+        }
+        this.name = name;
+    }
+
+    // public Ingredient() {}
 }
