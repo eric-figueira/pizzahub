@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -19,6 +20,7 @@ import pizzahub.api.entities.Ingredient;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Entity
@@ -56,5 +58,8 @@ public class MenuItem {
         this.name = name;
     }
 
-    // public MenuItem() {}
+    public MenuItem(MenuItemDTO data) {
+        this.name = data.name();
+        this.price = data.price();
+    }
 }
