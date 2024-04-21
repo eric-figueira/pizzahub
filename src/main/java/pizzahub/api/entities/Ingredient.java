@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.menuitem.MenuItem;
 
 @Getter
 @NoArgsConstructor

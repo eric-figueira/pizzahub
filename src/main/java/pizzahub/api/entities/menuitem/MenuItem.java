@@ -1,4 +1,4 @@
-package pizzahub.api.entities;
+package pizzahub.api.entities.menuitem;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.Ingredient;
 
 @Getter
 @NoArgsConstructor
