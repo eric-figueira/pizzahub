@@ -1,4 +1,4 @@
-package pizzahub.api.entities;
+package pizzahub.api.entities.user.worker;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,12 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import pizzahub.api.entities.enums.Role;
-
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.Pizzaria;
+import pizzahub.api.entities.user.Role;
 
 @Getter
 @NoArgsConstructor

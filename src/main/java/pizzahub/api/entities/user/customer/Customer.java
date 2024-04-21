@@ -1,4 +1,4 @@
-package pizzahub.api.entities;
+package pizzahub.api.entities.user.customer;
 
 import java.util.UUID;
 

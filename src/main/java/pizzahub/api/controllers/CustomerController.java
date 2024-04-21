@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pizzahub.api.entities.user.customer.Customer;
 import pizzahub.api.repositories.CustomerRepository;
-import pizzahub.api.entities.Customer;
 
 @RestController
 @RequestMapping(value = "/customers")
