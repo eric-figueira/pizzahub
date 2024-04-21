@@ -10,7 +10,8 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.enums.Role;
+import pizzahub.api.entities.user.Role;
+import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.utils.RegexValidator;
 
 @Getter

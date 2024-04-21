@@ -1,4 +1,4 @@
-package pizzahub.api.entities.enums;
+package pizzahub.api.entities.order;
 
 public enum PaymentMethod {
     CREDIT_CARD,

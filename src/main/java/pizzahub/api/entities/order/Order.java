@@ -1,4 +1,4 @@
-package pizzahub.api.entities;
+package pizzahub.api.entities.order;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
@@ -14,9 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import pizzahub.api.entities.enums.OrderStatus;
-import pizzahub.api.entities.enums.PaymentMethod;
-
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
