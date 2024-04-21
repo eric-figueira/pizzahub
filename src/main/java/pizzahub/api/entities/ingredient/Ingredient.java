@@ -1,4 +1,4 @@
-package pizzahub.api.entities;
+package pizzahub.api.entities.ingredient;
 
 import java.util.Set;
 

@@ -1,4 +1,4 @@
-package pizzahub.api.entities;
+package pizzahub.api.entities.pizzaria;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

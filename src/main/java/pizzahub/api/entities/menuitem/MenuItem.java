@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.Ingredient;
+import pizzahub.api.entities.ingredient.Ingredient;
 
 @Getter
 @NoArgsConstructor

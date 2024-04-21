@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.Pizzaria;
+import pizzahub.api.entities.pizzaria.Pizzaria;
 import pizzahub.api.entities.user.Role;
 
 @Getter
