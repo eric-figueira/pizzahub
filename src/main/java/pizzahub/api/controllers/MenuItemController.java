@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import pizzahub.api.entities.menuitem.MenuItem;
-import pizzahub.api.entities.menuitem.MenuItemRequestDTO;
+import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
 import pizzahub.api.repositories.MenuItemRepository;
 
 @RestController
@@ -65,7 +65,7 @@ public class MenuItemController {
     }
 
     @PostMapping
-    public ResponseEntity createMenuItem(@RequestBody @Valid MenuItemRequestDTO body) {
+    public ResponseEntity createMenuItem(@RequestBody @Valid CreateMenuItemRequestDTO body) {
         // TODO: Must have permission
         try {
             MenuItem newMenuItem = new MenuItem(body);

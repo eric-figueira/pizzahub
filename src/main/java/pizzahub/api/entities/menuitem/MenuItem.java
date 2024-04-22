@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import pizzahub.api.entities.ingredient.Ingredient;
+import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
 
 @Getter
 @NoArgsConstructor
@@ -36,7 +38,7 @@ public class MenuItem {
     private BigDecimal price;
     private String name;
 
-    @ManyToOne
+    @ManyToMany
     @JoinTable(
         name = "menu_item_ingredients",
         joinColumns = @JoinColumn(name = "menu_item_id"),
@@ -65,7 +67,7 @@ public class MenuItem {
         this.name = name;
     }
 
-    public MenuItem(MenuItemRequestDTO data) throws Exception {
+    public MenuItem(CreateMenuItemRequestDTO data) throws Exception {
         try {
             this.setName(data.name());
             this.setPrice(data.price());
