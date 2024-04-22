@@ -1,13 +1,15 @@
 package pizzahub.api.entities.menuitem;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -16,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
 import pizzahub.api.entities.ingredient.Ingredient;
 
 @Getter
@@ -34,8 +37,12 @@ public class MenuItem {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="id")
-    private Set<Ingredient> ingredients;
+    @JoinTable(
+        name = "menu_item_ingredients",
+        joinColumns = @JoinColumn(name = "menu_item_id"),
+        inverseJoinColumns = @JoinColumn(name = "ingredient_id")
+    )
+    private List<Ingredient> ingredients = new ArrayList<>();
 
     public void setId(Long id) throws Exception {
         if (id.toString().isEmpty()) {
