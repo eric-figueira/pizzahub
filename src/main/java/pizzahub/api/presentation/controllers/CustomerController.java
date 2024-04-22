@@ -1,4 +1,4 @@
-package pizzahub.api.controllers;
+package pizzahub.api.presentation.controllers;
 
 import java.util.List;
 
