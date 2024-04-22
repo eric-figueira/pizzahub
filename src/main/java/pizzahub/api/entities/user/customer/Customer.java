@@ -23,8 +23,8 @@ import pizzahub.api.utils.RegexValidator;
 @Table(name = "customer")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String fullname;
 
@@ -49,8 +49,8 @@ public class Customer {
     // public String getHouseNumber() { return this.houseNumber; }
     // public String getHouseComplement() { return this.houseComplement; }
 
-    public void setId(UUID id) throws Exception {
-        if (id.toString().isEmpty()) {
+    public void setId(Long id) throws Exception {
+        if (id == 0) {
             throw new IllegalArgumentException("[Customer]: Id cannot be null or empty");
         }
         this.id = id;

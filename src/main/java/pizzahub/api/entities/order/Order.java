@@ -3,7 +3,7 @@ package pizzahub.api.entities.order;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.UUID;
+// import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,9 +34,9 @@ public class Order {
 
     private short number;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    private UUID clientId;
+    // @OneToOne
+    // @JoinColumn(name = "id")
+    // private Long clientId;
 
     private Date orderDate;
     private LocalTime orderTime;
@@ -63,12 +63,12 @@ public class Order {
         this.number = number;
     }
 
-    public void setClientId(UUID clientId) {
-        if (clientId == null || clientId.toString().isEmpty()) {
-            throw new IllegalArgumentException("[Order]: Client id cannot be null");
-        }
-        this.clientId = clientId;
-    }
+    // public void setClientId(Long clientId) {
+    //     if (clientId == null || clientId == 0) {
+    //         throw new IllegalArgumentException("[Order]: Client id cannot be null");
+    //     }
+    //     this.clientId = clientId;
+    // }
 
     public void setOrderDate(Date orderDate) {
         if (orderDate == null || orderDate.after(new Date())) {
@@ -108,7 +108,7 @@ public class Order {
     public Order(CreateOrderRequestDTO data) throws Exception
     {
         try {
-            this.setClientId(data.clientId());
+            // this.setClientId(data.clientId());
             this.setNumber(data.number());
             this.setOrderDate(data.orderDate());
             this.setOrderStatus(data.orderStatus());

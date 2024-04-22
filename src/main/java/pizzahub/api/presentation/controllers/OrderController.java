@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pizzahub.api.entities.order.Order;
 import pizzahub.api.entities.order.data.CreateOrderRequestDTO;
-import pizzahub.api.entities.order.data.UpdateOrderRequestDTO;
 import pizzahub.api.entities.user.customer.Customer;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -63,22 +62,22 @@ public class OrderController {
         return repository.findById(orderId);
     }
 
-    @PostMapping()
-    public ResponseEntity createOrder(@RequestBody @Valid CreateOrderRequestDTO body) {
-        try {
-            Order order = new Order(body);
+    // @PostMapping()
+    // public ResponseEntity createOrder(@RequestBody @Valid CreateOrderRequestDTO body) {
+    //     try {
+    //         Order order = new Order(body);
 
-            Optional<Customer> customer = this.customerRepository.findById(body.clientId());
-            if (!customer.isPresent()) {
-                return ResponseEntity.badRequest().build();
-            }
+    //         Optional<Customer> customer = this.customerRepository.findById(body.clientId());
+    //         if (!customer.isPresent()) {
+    //             return ResponseEntity.badRequest().build();
+    //         }
 
-            this.repository.save(order);
-            return ResponseEntity.ok(order.getId());
-        } catch (Exception error) {
-            return ResponseEntity.unprocessableEntity().build();
-        }
-    }
+    //         this.repository.save(order);
+    //         return ResponseEntity.ok(order.getId());
+    //     } catch (Exception error) {
+    //         return ResponseEntity.unprocessableEntity().build();
+    //     }
+    // }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteOrder(@PathVariable("id") Long orderId) {
@@ -86,10 +85,10 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping
-    public ResponseEntity<Response> putOrder(@RequestBody @Valid UpdateOrderRequestDTO body) {
-        //TODO: process PUT request
+    // @PutMapping
+    // public ResponseEntity<Response> putOrder(@RequestBody @Valid UpdateOrderRequestDTO body) {
+    //     //TODO: process PUT request
 
-        return ResponseEntity.ok().body(new Response());
-    }
+    //     return ResponseEntity.ok().body(new Response());
+    // }
 }

@@ -39,7 +39,7 @@ public class Worker {
     private Pizzaria pizzaria;
 
     public void setId(Long id) throws Exception {
-        if (id.toString().isEmpty()) {
+        if (id == 0) {
             throw new IllegalArgumentException("[Worker]: Id cannot be null or empty");
         }
         this.id = id;
