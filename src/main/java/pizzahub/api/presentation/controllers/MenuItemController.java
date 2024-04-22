@@ -81,8 +81,19 @@ public class MenuItemController {
     public ResponseEntity createMenuItem(@RequestBody @Valid CreateMenuItemRequestDTO body) {
         // TODO: Must have permission
         try {
-            // get ingredients ids list and convert to list of ingredients
             MenuItem newMenuItem = new MenuItem(body);
+            try {
+                List<Ingredient> ingredients = body.ingredientsIds()
+                    .stream()
+                    .map(ingredientId -> this.ingredientRepository
+                        .findById(ingredientId)
+                        .orElseThrow(() -> new EntityNotFoundException()))
+                    .collect(Collectors.toList());
+
+                newMenuItem.setIngredients(ingredients);
+            } catch (EntityNotFoundException error) {
+                return ResponseEntity.notFound().build();
+            }
 
             this.repository.save(newMenuItem);
             return ResponseEntity.ok(newMenuItem.getId());
