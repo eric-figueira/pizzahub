@@ -19,7 +19,7 @@ import pizzahub.api.utils.RegexValidator;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "pizzarias")
+@Table(name = "pizzaria")
 public class Pizzaria {
     @Id
     private short code;

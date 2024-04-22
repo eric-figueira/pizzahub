@@ -14,17 +14,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.order.data.CreateOrderRequestDTO;
 
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "orders")
+@Table(name = "order")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,5 +105,21 @@ public class Order {
         this.orderStatus = orderStatus;
     }
 
-    // public Order() {}
+    public Order(CreateOrderRequestDTO data) throws Exception
+    {
+        try {
+            this.setClientId(data.clientId());
+            this.setNumber(data.number());
+            this.setOrderDate(data.orderDate());
+            this.setOrderStatus(data.orderStatus());
+            this.setOrderTime(data.orderTime());
+            if (data.paymentMethod() != null)
+                this.setPaymentMethod(data.paymentMethod());
+            if (data.shippingTax() != null)
+                this.setShippingTax(data.shippingTax());
+        }
+        catch (Exception error) {
+            throw error;
+        }
+    }
 }

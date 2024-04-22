@@ -36,7 +36,7 @@ public class IngredientController {
         short start = (short) ((page - 1) * perPage);
         short end   = (short) (page * perPage);
 
-        if (start >= all.size() || end >= all.size()) {
+        if (start <= all.size() || end >= all.size()) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ArrayList<Ingredient>());

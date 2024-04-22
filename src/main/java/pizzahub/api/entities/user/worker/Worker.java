@@ -21,7 +21,7 @@ import pizzahub.api.entities.user.Role;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "workers")
+@Table(name = "worker")
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

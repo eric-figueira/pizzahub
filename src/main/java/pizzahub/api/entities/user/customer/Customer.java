@@ -20,7 +20,7 @@ import pizzahub.api.utils.RegexValidator;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "customers")
+@Table(name = "customer")
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

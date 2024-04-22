@@ -27,7 +27,7 @@ import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "menu_items")
+@Table(name = "menu_item")
 public class MenuItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

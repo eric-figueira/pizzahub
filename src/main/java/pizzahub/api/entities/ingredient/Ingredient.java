@@ -22,7 +22,7 @@ import pizzahub.api.entities.menuitem.MenuItem;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "ingredients")
+@Table(name = "ingredient")
 public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
