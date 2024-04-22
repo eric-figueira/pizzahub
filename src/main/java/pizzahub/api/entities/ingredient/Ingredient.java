@@ -46,4 +46,12 @@ public class Ingredient {
         }
         this.name = name;
     }
+
+    public Ingredient(IngredientRequestDTO data) throws Exception {
+        try {
+            this.setName(data.name());
+        } catch (Exception error) {
+            throw error;
+        }
+    }
 }

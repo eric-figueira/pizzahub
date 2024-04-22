@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import pizzahub.api.entities.menuitem.MenuItem;
-import pizzahub.api.entities.menuitem.MenuItemDTO;
+import pizzahub.api.entities.menuitem.MenuItemRequestDTO;
 import pizzahub.api.repositories.MenuItemRepository;
 
 @RestController
@@ -65,17 +65,21 @@ public class MenuItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createMenuItem(@RequestBody @Valid MenuItemDTO body) {
-        // Must have permission
-        MenuItem newMenuItem = new MenuItem(body);
+    public ResponseEntity createMenuItem(@RequestBody @Valid MenuItemRequestDTO body) {
+        // TODO: Must have permission
+        try {
+            MenuItem newMenuItem = new MenuItem(body);
 
-        this.repository.save(newMenuItem);
-        return ResponseEntity.ok(newMenuItem.getId());
+            this.repository.save(newMenuItem);
+            return ResponseEntity.ok(newMenuItem.getId());
+        } catch (Exception error) {
+            return ResponseEntity.unprocessableEntity().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteMenuItem(@PathVariable("id") Long menuItemId) {
-        // Must have permission
+        // TODO: Must have permission
         this.repository.deleteById(menuItemId);
         return ResponseEntity.ok().build();
     }

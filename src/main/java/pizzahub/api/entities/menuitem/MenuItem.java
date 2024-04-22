@@ -65,8 +65,12 @@ public class MenuItem {
         this.name = name;
     }
 
-    public MenuItem(MenuItemDTO data) {
-        this.name = data.name();
-        this.price = data.price();
+    public MenuItem(MenuItemRequestDTO data) throws Exception {
+        try {
+            this.setName(data.name());
+            this.setPrice(data.price());
+        } catch (Exception error) {
+            throw error;
+        }
     }
 }
