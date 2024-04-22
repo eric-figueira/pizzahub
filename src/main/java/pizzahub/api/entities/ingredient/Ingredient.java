@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
+import pizzahub.api.entities.ingredient.data.CreateIngredientRequestDTO;
 import pizzahub.api.entities.menuitem.MenuItem;
 
 @Getter
@@ -47,7 +47,7 @@ public class Ingredient {
         this.name = name;
     }
 
-    public Ingredient(IngredientRequestDTO data) throws Exception {
+    public Ingredient(CreateIngredientRequestDTO data) throws Exception {
         try {
             this.setName(data.name());
         } catch (Exception error) {

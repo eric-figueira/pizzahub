@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import pizzahub.api.entities.ingredient.Ingredient;
-import pizzahub.api.entities.ingredient.IngredientRequestDTO;
+import pizzahub.api.entities.ingredient.data.CreateIngredientRequestDTO;
 import pizzahub.api.repositories.IngredientRepository;
 
 @RestController
@@ -53,7 +53,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> createIngredient(@RequestBody @Valid IngredientRequestDTO body) {
+    public ResponseEntity<Long> createIngredient(@RequestBody @Valid CreateIngredientRequestDTO body) {
         try {
             // TODO: Must have permission
             Ingredient newIngredient = new Ingredient(body);
