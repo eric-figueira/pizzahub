@@ -1,7 +1,6 @@
 package pizzahub.api.entities.menuitem;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -11,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
@@ -44,7 +42,7 @@ public class MenuItem {
         joinColumns = @JoinColumn(name = "menu_item_id"),
         inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private List<Ingredient> ingredients;
 
     public void setId(Long id) throws Exception {
         if (id.toString().isEmpty()) {
@@ -65,6 +63,13 @@ public class MenuItem {
             throw new IllegalArgumentException("[Menu Item]: Name cannot be null or empty");
         }
         this.name = name;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) throws Exception {
+        if (ingredients == null || ingredients.size() == 0) {
+            throw new IllegalArgumentException("[Menu Item]: Ingredients list cannot be null or empty");
+        }
+        this.ingredients = ingredients;
     }
 
     public MenuItem(CreateMenuItemRequestDTO data) throws Exception {

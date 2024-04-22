@@ -3,6 +3,7 @@ package pizzahub.api.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,19 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
+import pizzahub.api.entities.menuitem.data.UpdateMenuItemRequestDTO;
+import pizzahub.api.repositories.IngredientRepository;
 import pizzahub.api.repositories.MenuItemRepository;
 
 @RestController
@@ -33,10 +39,14 @@ public class MenuItemController {
      * - Post (must have permission)
      * - Delete (must have permission)
      * - Update (must have permission)
+     * - Refactor PUT method (Ingredients Ids) to make it more efficient
     */
 
     @Autowired
     private MenuItemRepository repository;
+
+    @Autowired
+    private IngredientRepository ingredientRepository;
 
     @GetMapping
     public ResponseEntity<List<MenuItem>> fetchMenuItems(
@@ -82,5 +92,51 @@ public class MenuItemController {
         // TODO: Must have permission
         this.repository.deleteById(menuItemId);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<MenuItem> updateMenuItem(@RequestBody @Valid UpdateMenuItemRequestDTO body) {
+        Optional<MenuItem> optionalMenuItem = this.repository.findById(body.id());
+
+        if (optionalMenuItem.isPresent()) {
+            MenuItem itemMenu = optionalMenuItem.get();
+
+            try {
+                if (body.name() != null) {
+                    try {
+                        itemMenu.setName(body.name());
+                    } catch (Exception error) {
+                        return ResponseEntity.badRequest().body("Invalid name format");
+                    }
+                }
+
+                if (body.price() != null) {
+                    itemMenu.setPrice(body.price());
+                }
+
+                try {
+                    if (body.ingredientsIds() != null) {
+                        List<Ingredient> ingredients = body.ingredientsIds()
+                            .stream()
+                            .map(ingredientId -> this.ingredientRepository
+                                .findById(ingredientId)
+                                .orElseThrow(() -> new EntityNotFoundException()))
+                            .collect(Collectors.toList());
+
+                        itemMenu.setIngredients(ingredients);
+                    }
+                } catch (EntityNotFoundException error) {
+                    return ResponseEntity.notFound().build();
+                }
+
+            } catch (Exception error) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            MenuItem updatedMenuItem = this.repository.save(itemMenu);
+            return ResponseEntity.ok(updatedMenuItem);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
