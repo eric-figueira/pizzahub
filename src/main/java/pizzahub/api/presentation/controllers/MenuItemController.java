@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient.ResponseSpec;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import jakarta.validation.Valid;
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
+import pizzahub.api.entities.menuitem.data.FetchMenuItemsResponseDTO;
 import pizzahub.api.entities.menuitem.data.UpdateMenuItemRequestDTO;
 
 import pizzahub.api.repositories.IngredientRepository;
@@ -52,11 +54,17 @@ public class MenuItemController {
     private IngredientRepository ingredientRepository;
 
     @GetMapping
-    public ResponseEntity<List<MenuItem>> fetchMenuItems(
+    public ResponseEntity<Response> fetchMenuItems(
         @RequestParam(value = "page", defaultValue = "1") short page,
-        @RequestParam(value = "perPage", defaultValue = "30") short perPage
+        @RequestParam(value = "perPage", defaultValue = "30") short perPage,
+        @RequestParam(value = "orderBy", defaultValue = "price") String price
     ) {
+        System.out.println("----- PAGE " + page);
+        System.out.println("----- PER PAGE " + perPage);
+
         List<MenuItem> all = this.repository.findAll();
+
+        // pagination:
 
         short start = (short) ((page - 1) * perPage);
         short end   = (short) (page * perPage);
@@ -64,17 +72,58 @@ public class MenuItemController {
         if (start >= all.size() || end >= all.size()) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ArrayList<MenuItem>());
+                .body(new Response(true, "Invalid pagination parameters", new ArrayList<FetchMenuItemsResponseDTO>()));
         }
 
         List<MenuItem> paginated = all.subList((page - 1) * perPage, page * perPage);
 
-        return ResponseEntity.ok(paginated);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                false,
+                "Successfully fetched all menu items",
+                paginated.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList())
+            ));
+    }
+
+    private FetchMenuItemsResponseDTO convertToDTO(MenuItem menuItem) {
+        return new FetchMenuItemsResponseDTO(
+                menuItem.getId(),
+                menuItem.getPrice(),
+                menuItem.getName(),
+                menuItem.getIngredients()
+                        .stream()
+                        .map(Ingredient::getName)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/{id}")
-    public Optional<MenuItem> fetchMenuItemById(@PathVariable("id") Long menuItemId) {
-        return this.repository.findById(menuItemId);
+    public ResponseEntity<Response> fetchMenuItemById(@PathVariable("id") Long menuItemId) {
+        Optional<MenuItem> menuItemOptional = this.repository.findById(menuItemId);
+
+        if (menuItemOptional.isPresent()) {
+            MenuItem menuItem = menuItemOptional.get();
+
+            FetchMenuItemsResponseDTO response = new FetchMenuItemsResponseDTO(
+                menuItem.getId(),
+                menuItem.getPrice(),
+                menuItem.getName(),
+                menuItem.getIngredients().stream()
+                        .map(Ingredient::getName)
+                        .collect(Collectors.toList())
+            );
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response(false, "Successfully fetched menu item with specified id", response));
+        } else {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new Response(true, "Could not found menu item with specified id", null));
+        }
     }
 
     @PostMapping
