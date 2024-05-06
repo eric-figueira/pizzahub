@@ -64,17 +64,26 @@ public class MenuItemController {
         List<MenuItem> all = this.repository.findAll();
 
         // pagination:
+        short totalPages = (short) (all.size() / perPage);
+        if (page < 1 || page > totalPages) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new Response("Invalid page number", null));
+        }
 
         short start = (short) ((page - 1) * perPage);
-        short end   = (short) (page * perPage);
+        // left: how many elements are left in the last block
+        short left  = (short) (all.size() % perPage);
+        // end: is either the full block or the position of the remaining elemnt, if it exists
+        short end   = (short) ((page * perPage) - left);
 
         if (start >= all.size() || end >= all.size()) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new Response("Invalid pagination parameters", new ArrayList<FetchMenuItemsResponseDTO>()));
+                .body(new Response("Invalid pagination parameters", null));
         }
 
-        List<MenuItem> paginated = all.subList((page - 1) * perPage, page * perPage);
+        List<MenuItem> paginated = all.subList(start, end);
 
         return ResponseEntity
             .status(HttpStatus.OK)
