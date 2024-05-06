@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient.ResponseSpec;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -130,7 +129,6 @@ public class MenuItemController {
         // TODO: Must have permission
         try {
             MenuItem newMenuItem = new MenuItem(body);
-            System.out.println("----- 1");
             try {
                 List<Ingredient> ingredients = body.ingredientsIds()
                     .stream()
@@ -140,7 +138,6 @@ public class MenuItemController {
                     .collect(Collectors.toList());
 
                 newMenuItem.setIngredients(ingredients);
-                System.out.println("----- 2" + ingredients);
             } catch (EntityNotFoundException error) {
                 return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -151,7 +148,17 @@ public class MenuItemController {
 
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new Response("Successfully created new menu item", savedMenuItem));
+                .body(new Response(
+                    "Successfully created new menu item",
+                    new FetchMenuItemsResponseDTO(
+                        savedMenuItem.getId(),
+                        savedMenuItem.getPrice(),
+                        savedMenuItem.getName(),
+                        savedMenuItem.getIngredients().stream()
+                                .map(Ingredient::getName)
+                                .collect(Collectors.toList())
+                    )
+                ));
         } catch (Exception error) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -188,7 +195,6 @@ public class MenuItemController {
             try {
                 if (body.name() != null) {
                     try {
-                        System.out.println("----- A" + body.name());
                         itemMenu.setName(body.name());
                     } catch (Exception error) {
                         return ResponseEntity.badRequest().body(new Response("Invalid name format", null));
@@ -197,7 +203,6 @@ public class MenuItemController {
 
                 if (body.price() != null) {
                     try {
-                        System.out.println("----- D" + body.price());
                         itemMenu.setPrice(body.price());
                     } catch (Exception error) {
                         return ResponseEntity.badRequest().body(new Response("Invalid price format", null));
@@ -206,7 +211,6 @@ public class MenuItemController {
 
                 if (body.ingredientsIds() != null) {
                     try {
-                        System.out.println("----- C" + body.ingredientsIds());
                         List<Ingredient> ingredients = body.ingredientsIds()
                             .stream()
                             .map(ingredientId -> this.ingredientRepository
@@ -227,7 +231,20 @@ public class MenuItemController {
             }
 
             MenuItem updatedMenuItem = this.repository.save(itemMenu);
-            return ResponseEntity.ok().body(new Response("Successfully updated Menu Item", updatedMenuItem));
+
+            return ResponseEntity
+                .ok()
+                .body(new Response(
+                    "Successfully updated Menu Item",
+                    new FetchMenuItemsResponseDTO(
+                        updatedMenuItem.getId(),
+                        updatedMenuItem.getPrice(),
+                        updatedMenuItem.getName(),
+                        updatedMenuItem.getIngredients().stream()
+                                .map(Ingredient::getName)
+                                .collect(Collectors.toList())
+                    )
+                ));
         } else {
             return ResponseEntity.notFound().build();
         }
