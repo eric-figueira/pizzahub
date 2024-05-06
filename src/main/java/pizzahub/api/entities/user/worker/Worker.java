@@ -13,8 +13,9 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.pizzaria.Pizzaria;
+import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.Role;
+import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
 
 @Getter
 @NoArgsConstructor
@@ -36,7 +37,7 @@ public class Worker {
 
     @OneToOne
     @JoinColumn(name = "code")
-    private Pizzaria pizzaria;
+    private Pizzeria pizzeria;
 
     public void setId(Long id) throws Exception {
         if (id == 0) {
@@ -73,12 +74,26 @@ public class Worker {
         this.role = role;
     }
 
-    public void setPizzaria(Pizzaria pizzaria) {
-        if (pizzaria == null) {
-            throw new IllegalArgumentException("[Worker]: Pizzaria cannot be null");
+    public void setPizzeria(Pizzeria pizzeria) {
+        if (pizzeria == null) {
+            throw new IllegalArgumentException("[Worker]: Pizzeria cannot be null");
         }
-        this.pizzaria = pizzaria;
+        this.pizzeria = pizzeria;
     }
 
-    // public Worker() {}
+    public Worker(CreateWorkerRequestDTO data) throws Exception {
+        setFullname(data.fullName());
+        setEmail(data.email());
+        setPassword(data.password());
+        setRole(data.role());
+    }
+
+    public CreateWorkerRequestDTO createWorkerRequestDTO() {
+        return new CreateWorkerRequestDTO(
+            getFullname(),
+            getEmail(),
+            getPassword(),
+            getRole(),
+            getPizzeria().getCode());
+    }
 }

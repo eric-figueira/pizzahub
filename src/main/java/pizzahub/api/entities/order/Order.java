@@ -107,19 +107,14 @@ public class Order {
 
     public Order(CreateOrderRequestDTO data) throws Exception
     {
-        try {
-            // this.setClientId(data.clientId());
-            this.setNumber(data.number());
-            this.setOrderDate(data.orderDate());
-            this.setOrderStatus(data.orderStatus());
-            this.setOrderTime(data.orderTime());
-            if (data.paymentMethod() != null)
-                this.setPaymentMethod(data.paymentMethod());
-            if (data.shippingTax() != null)
-                this.setShippingTax(data.shippingTax());
-        }
-        catch (Exception error) {
-            throw error;
-        }
+        // this.setClientId(data.clientId());
+        this.setNumber(data.number());
+        this.setOrderDate(data.orderDate());
+        this.setOrderStatus(data.orderStatus());
+        this.setOrderTime(data.orderTime());
+        if (data.paymentMethod() != null)
+            this.setPaymentMethod(data.paymentMethod());
+        if (data.shippingTax() != null)
+            this.setShippingTax(data.shippingTax());
     }
 }
