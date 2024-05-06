@@ -72,7 +72,7 @@ public class MenuItemController {
         if (start >= all.size() || end >= all.size()) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new Response(true, "Invalid pagination parameters", new ArrayList<FetchMenuItemsResponseDTO>()));
+                .body(new Response("Invalid pagination parameters", new ArrayList<FetchMenuItemsResponseDTO>()));
         }
 
         List<MenuItem> paginated = all.subList((page - 1) * perPage, page * perPage);
@@ -80,7 +80,6 @@ public class MenuItemController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
-                false,
                 "Successfully fetched all menu items",
                 paginated.stream()
                     .map(this::convertToDTO)
@@ -118,19 +117,20 @@ public class MenuItemController {
 
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new Response(false, "Successfully fetched menu item with specified id", response));
+                .body(new Response("Successfully fetched menu item with specified id", response));
         } else {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new Response(true, "Could not found menu item with specified id", null));
+                .body(new Response("Could not found menu item with specified id", null));
         }
     }
 
     @PostMapping
-    public ResponseEntity createMenuItem(@RequestBody @Valid CreateMenuItemRequestDTO body) {
+    public ResponseEntity<Response> createMenuItem(@RequestBody @Valid CreateMenuItemRequestDTO body) {
         // TODO: Must have permission
         try {
             MenuItem newMenuItem = new MenuItem(body);
+            System.out.println("----- 1");
             try {
                 List<Ingredient> ingredients = body.ingredientsIds()
                     .stream()
@@ -140,22 +140,42 @@ public class MenuItemController {
                     .collect(Collectors.toList());
 
                 newMenuItem.setIngredients(ingredients);
+                System.out.println("----- 2" + ingredients);
             } catch (EntityNotFoundException error) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new Response("Could not found ingredient", null));
             }
 
-            this.repository.save(newMenuItem);
-            return ResponseEntity.ok(newMenuItem.getId());
+            MenuItem savedMenuItem = this.repository.save(newMenuItem);
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response("Successfully created new menu item", savedMenuItem));
         } catch (Exception error) {
-            return ResponseEntity.unprocessableEntity().build();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Could not create new menu item", null));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteMenuItem(@PathVariable("id") Long menuItemId) {
+    public ResponseEntity<Response> deleteMenuItem(@PathVariable("id") Long menuItemId) {
         // TODO: Must have permission
-        this.repository.deleteById(menuItemId);
-        return ResponseEntity.ok().build();
+        Optional<MenuItem> menuItemOptional = this.repository.findById(menuItemId);
+
+        if (menuItemOptional.isPresent()) {
+            this.repository.deleteById(menuItemId);
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response("Successfully deleted menu item with specified id", null));
+        }
+        else {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new Response("Menu item with specified id does not exist", null));
+        }
     }
 
     @PutMapping
@@ -168,22 +188,25 @@ public class MenuItemController {
             try {
                 if (body.name() != null) {
                     try {
+                        System.out.println("----- A" + body.name());
                         itemMenu.setName(body.name());
                     } catch (Exception error) {
-                        return ResponseEntity.badRequest().body(new Response(true, "Invalid name format", null));
+                        return ResponseEntity.badRequest().body(new Response("Invalid name format", null));
                     }
                 }
 
                 if (body.price() != null) {
                     try {
+                        System.out.println("----- D" + body.price());
                         itemMenu.setPrice(body.price());
                     } catch (Exception error) {
-                        return ResponseEntity.badRequest().body(new Response(true, "Invalid price format", null));
+                        return ResponseEntity.badRequest().body(new Response("Invalid price format", null));
                     }
                 }
 
                 if (body.ingredientsIds() != null) {
                     try {
+                        System.out.println("----- C" + body.ingredientsIds());
                         List<Ingredient> ingredients = body.ingredientsIds()
                             .stream()
                             .map(ingredientId -> this.ingredientRepository
@@ -195,7 +218,7 @@ public class MenuItemController {
                     } catch (EntityNotFoundException error) {
                         return ResponseEntity.notFound().build();
                     } catch (IllegalArgumentException error) {
-                        return ResponseEntity.badRequest().body(new Response(true, "Invalid ingredients list", null));
+                        return ResponseEntity.badRequest().body(new Response("Invalid ingredients list", null));
                     }
                 }
 
@@ -204,7 +227,7 @@ public class MenuItemController {
             }
 
             MenuItem updatedMenuItem = this.repository.save(itemMenu);
-            return ResponseEntity.ok().body(new Response(false, "Successfully updated Menu Item", updatedMenuItem));
+            return ResponseEntity.ok().body(new Response("Successfully updated Menu Item", updatedMenuItem));
         } else {
             return ResponseEntity.notFound().build();
         }
