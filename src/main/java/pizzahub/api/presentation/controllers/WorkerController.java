@@ -1,6 +1,5 @@
 package pizzahub.api.presentation.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,8 +99,8 @@ public class WorkerController {
         try {
             Worker worker = new Worker(body);
             try {
-                Short id = body.pizzeria_id();
-                Optional<Pizzeria> pizzeria = pizzeriaRepository.findById(id);
+                Short id = body.pizzeriaCode();
+                Optional<Pizzeria> pizzeria = pizzeriaRepository.findByCode(id);
 
                 if (pizzeria.isPresent()) {
                     worker.setPizzeria(pizzeria.get());
@@ -183,17 +182,47 @@ public class WorkerController {
                     }
                 }
 
+                if (body.role() != null) {
+                    try {
+                        worker.setRole(body.role());
+                    } catch (Exception error) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid role", null));
+                    }
+                }
+
                 if (body.pizzeriaCode() == 0 || body.pizzeriaCode() == null) {
                     try {
+                        Optional<Pizzeria> pizzeria = pizzeriaRepository.findByCode(body.pizzeriaCode());
 
+                        if (pizzeria.isPresent()) {
+                            worker.setPizzeria(pizzeria.get());
+                        } else {
+                            return ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(new Response("Could not find pizzeria with specified id", null));
+                        }
 
                     } catch (Exception error) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid pizzaria code format", null));
                     }
                 }
+
+                Worker updatedWorker = this.repository.save(worker);
+
+                return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new Response(
+                        "Successfully updated worker",
+                        updatedWorker.convertToResponseDTO()
+                ));
             }
             catch (Exception error) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Failed to retrieve informed parameters", null));
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new Response(
+                        "Failed to retrieve informed parameters",
+                        null
+                    ));
             }
         }
         else {
