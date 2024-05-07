@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,11 +32,10 @@ public class IngredientController {
     private IngredientRepository repository;
 
     @GetMapping
-    public ResponseEntity<Response> fetchIngredients (
-        @RequestParam(value = "page", defaultValue = "1") short page,
-        @RequestParam(value = "perPage", defaultValue = "30") short perPage,
-        @RequestParam(value = "orderByCount", defaultValue = "asc") String order
-    ) {
+    public ResponseEntity<Response> fetchIngredients(
+            @RequestParam(value = "page", defaultValue = "1") short page,
+            @RequestParam(value = "perPage", defaultValue = "30") short perPage,
+            @RequestParam(value = "orderByCount", defaultValue = "asc") String order) {
         List<Ingredient> all = this.repository.findAll();
 
         // pagination
@@ -54,8 +54,8 @@ public class IngredientController {
 
         if (start >= all.size() || end > all.size()) {
             return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new Response("Invalid pagination parameters", null));
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new Response("Invalid pagination parameters", null));
         }
 
         List<Ingredient> paginated = all.subList(start, end);
@@ -71,13 +71,12 @@ public class IngredientController {
         }
 
         return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(new Response(
-                "Successfully fetched all ingredients",
-                paginated.stream()
-                    .map(ingredient -> ingredient.convertToResponseDTO())
-                    .collect(Collectors.toList())
-            ));
+                .status(HttpStatus.OK)
+                .body(new Response(
+                        "Successfully fetched all ingredients",
+                        paginated.stream()
+                                .map(ingredient -> ingredient.convertToResponseDTO())
+                                .collect(Collectors.toList())));
     }
 
     @GetMapping("/{id}")
@@ -90,32 +89,33 @@ public class IngredientController {
             FetchIngredientsResponseDTO response = menuItem.convertToResponseDTO();
 
             return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new Response(
-                    "Successfully fetched ingredient with specified id",
-                    response
-                ));
-        }
-        else {
+                    .status(HttpStatus.OK)
+                    .body(new Response(
+                            "Successfully fetched ingredient with specified id",
+                            response));
+        } else {
             return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new Response(
-                    "Could not find ingredient with specified id",
-                    null
-                ));
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new Response(
+                            "Could not find ingredient with specified id",
+                            null));
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Long> createIngredient(@RequestBody @Valid CreateIngredientRequestDTO body) {
-        try {
-            // TODO: Must have permission
-            Ingredient newIngredient = new Ingredient(body);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response> deleteIngredient(@PathVariable("id") Long ingredientId) {
+        Optional<Ingredient> optionalIngredient = this.repository.findById(ingredientId);
 
-            this.repository.save(newIngredient);
-            return ResponseEntity.ok(newIngredient.getId());
-        } catch (Exception error) {
-            return ResponseEntity.unprocessableEntity().build();
+        if (optionalIngredient.isPresent()) {
+            this.repository.deleteById(ingredientId);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new Response("Successfully deleted ingredient with specified id", null));
+        } else {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new Response("Ingredient with specified id does not exist", null));
         }
     }
 }
