@@ -16,6 +16,7 @@ import lombok.ToString;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.Role;
 import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
+import pizzahub.api.entities.user.worker.data.FetchWorkerResponseDTO;
 
 @Getter
 @NoArgsConstructor
@@ -88,8 +89,9 @@ public class Worker {
         setRole(data.role());
     }
 
-    public CreateWorkerRequestDTO createWorkerRequestDTO() {
-        return new CreateWorkerRequestDTO(
+    public FetchWorkerResponseDTO fetchWorkerResponseDTO() {
+        return new FetchWorkerResponseDTO(
+            getId(),
             getFullname(),
             getEmail(),
             getPassword(),
