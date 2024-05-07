@@ -1,6 +1,5 @@
 package pizzahub.api.presentation.controllers;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -39,12 +38,12 @@ public class MenuItemController {
 
     /*
      * To Do:
-     * - Pagination
-     * - Order by price ?
-     * - Post (must have permission)
-     * - Delete (must have permission)
-     * - Update (must have permission)
-     * - Refactor PUT method (Ingredients Ids) to make it more efficient
+     * [x] Pagination
+     * [x] Order by price
+     * [] Post (must have permission)
+     * [] Delete (must have permission)
+     * [] Update (must have permission)
+     * [] Refactor PUT method (Ingredients Ids) to make it more efficient
     */
 
     @Autowired
@@ -59,9 +58,6 @@ public class MenuItemController {
         @RequestParam(value = "perPage", defaultValue = "30") short perPage,
         @RequestParam(value = "orderBy", defaultValue = "") String orderBy
     ) {
-        System.out.println("----- PAGE " + page);
-        System.out.println("----- PER PAGE " + perPage);
-
         List<MenuItem> all = this.repository.findAll();
 
         // pagination
@@ -101,21 +97,9 @@ public class MenuItemController {
             .body(new Response(
                 "Successfully fetched all menu items",
                 paginated.stream()
-                    .map(this::convertToDTO)
+                    .map(item -> item.convertToResponseDTO())
                     .collect(Collectors.toList())
             ));
-    }
-
-    private FetchMenuItemsResponseDTO convertToDTO(MenuItem menuItem) {
-        return new FetchMenuItemsResponseDTO(
-                menuItem.getId(),
-                menuItem.getPrice(),
-                menuItem.getName(),
-                menuItem.getIngredients()
-                        .stream()
-                        .map(Ingredient::getName)
-                        .collect(Collectors.toList())
-        );
     }
 
     @GetMapping("/{id}")
@@ -125,19 +109,13 @@ public class MenuItemController {
         if (menuItemOptional.isPresent()) {
             MenuItem menuItem = menuItemOptional.get();
 
-            FetchMenuItemsResponseDTO response = new FetchMenuItemsResponseDTO(
-                menuItem.getId(),
-                menuItem.getPrice(),
-                menuItem.getName(),
-                menuItem.getIngredients().stream()
-                        .map(Ingredient::getName)
-                        .collect(Collectors.toList())
-            );
+            FetchMenuItemsResponseDTO response = menuItem.convertToResponseDTO();
 
             return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response("Successfully fetched menu item with specified id", response));
-        } else {
+        }
+        else {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new Response("Could not found menu item with specified id", null));
@@ -170,16 +148,10 @@ public class MenuItemController {
                 .status(HttpStatus.OK)
                 .body(new Response(
                     "Successfully created new menu item",
-                    new FetchMenuItemsResponseDTO(
-                        savedMenuItem.getId(),
-                        savedMenuItem.getPrice(),
-                        savedMenuItem.getName(),
-                        savedMenuItem.getIngredients().stream()
-                                .map(Ingredient::getName)
-                                .collect(Collectors.toList())
-                    )
+                    savedMenuItem.convertToResponseDTO()
                 ));
-        } catch (Exception error) {
+        }
+        catch (Exception error) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new Response("Could not create new menu item", null));
@@ -256,16 +228,10 @@ public class MenuItemController {
                 .ok()
                 .body(new Response(
                     "Successfully updated Menu Item",
-                    new FetchMenuItemsResponseDTO(
-                        updatedMenuItem.getId(),
-                        updatedMenuItem.getPrice(),
-                        updatedMenuItem.getName(),
-                        updatedMenuItem.getIngredients().stream()
-                                .map(Ingredient::getName)
-                                .collect(Collectors.toList())
-                    )
+                    updatedMenuItem.convertToResponseDTO()
                 ));
-        } else {
+        }
+        else {
             return ResponseEntity.notFound().build();
         }
     }

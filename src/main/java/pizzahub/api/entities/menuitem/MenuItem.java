@@ -2,6 +2,7 @@ package pizzahub.api.entities.menuitem;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +21,7 @@ import lombok.ToString;
 
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
+import pizzahub.api.entities.menuitem.data.FetchMenuItemsResponseDTO;
 
 @Getter
 @NoArgsConstructor
@@ -75,5 +77,14 @@ public class MenuItem {
     public MenuItem(CreateMenuItemRequestDTO data) throws Exception {
         this.setName(data.name());
         this.setPrice(data.price());
+    }
+
+    public FetchMenuItemsResponseDTO convertToResponseDTO() {
+        return new FetchMenuItemsResponseDTO(
+            this.getId(),
+            this.getPrice(),
+            this.getName(),
+            this.getIngredients().stream().map(Ingredient::getName).collect(Collectors.toList())
+        );
     }
 }
