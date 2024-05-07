@@ -1,6 +1,7 @@
 package pizzahub.api.presentation.controllers;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,34 +57,44 @@ public class MenuItemController {
     public ResponseEntity<Response> fetchMenuItems(
         @RequestParam(value = "page", defaultValue = "1") short page,
         @RequestParam(value = "perPage", defaultValue = "30") short perPage,
-        @RequestParam(value = "orderBy", defaultValue = "price") String price
+        @RequestParam(value = "orderBy", defaultValue = "") String orderBy
     ) {
         System.out.println("----- PAGE " + page);
         System.out.println("----- PER PAGE " + perPage);
 
         List<MenuItem> all = this.repository.findAll();
 
-        // pagination:
-        short totalPages = (short) (all.size() / perPage);
-        if (page < 1 || page > totalPages) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new Response("Invalid page number", null));
+        // pagination
+        short start = (short) ((page - 1) * perPage);
+        short end = 1;
+
+        double numberOfGroups = (double) all.size() / perPage;
+        short lastGroupNumber = (short) Math.ceil(numberOfGroups);
+
+        if (page == lastGroupNumber) {
+            // pagination refers to last page
+            end = (short) all.size();
+        } else {
+            end = (short) (page * perPage);
         }
 
-        short start = (short) ((page - 1) * perPage);
-        // left: how many elements are left in the last block
-        short left  = (short) (all.size() % perPage);
-        // end: is either the full block or the position of the remaining elemnt, if it exists
-        short end   = (short) ((page * perPage) - left);
-
-        if (start >= all.size() || end >= all.size()) {
+        if (start >= all.size() || end > all.size()) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new Response("Invalid pagination parameters", null));
         }
 
         List<MenuItem> paginated = all.subList(start, end);
+
+        // ordenation
+        switch (orderBy) {
+            case "price":
+                paginated.sort(Comparator.comparing(MenuItem::getPrice));
+                break;
+
+            default:
+                break;
+        }
 
         return ResponseEntity
             .status(HttpStatus.OK)
