@@ -3,10 +3,12 @@ package pizzahub.api.presentation.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,12 +20,13 @@ import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
 import pizzahub.api.entities.user.worker.data.FetchWorkerResponseDTO;
+import pizzahub.api.entities.user.worker.data.UpdateWorkerRequestDTO;
 import pizzahub.api.repositories.PizzeriaRepository;
 import pizzahub.api.repositories.WorkerRepository;
 import pizzahub.api.presentation.Response;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 
 @RestController
 @RequestMapping("/workers")
@@ -36,34 +39,42 @@ public class WorkerController {
 
     @GetMapping
     public ResponseEntity<Response> fetchWorkers(
-        @RequestParam(value="page", defaultValue="1") short page,
-        @RequestParam(value="perPage", defaultValue="30") short perPage,
-        @RequestParam(value="orderBy", defaultValue="name") String name
+            @RequestParam(value = "page", defaultValue = "1") short page,
+            @RequestParam(value = "perPage", defaultValue = "30") short perPage,
+            @RequestParam(value = "orderBy", defaultValue = "name") String name
     ) {
-        System.out.println("----- PAGE " + page);
-        System.out.println("----- PER PAGE " + perPage);
-
         List<Worker> all = this.repository.findAll();
 
-        short start = (short)((page - 1)*(perPage));
-        short end = (short)(page*perPage);
+        // pagination
+        short start = (short) ((page - 1) * perPage);
+        short end = 1;
 
-        if (start < 0 || end >= all.size()) {
+        double numberOfGroups = (double) all.size() / perPage;
+        short lastGroupNumber = (short) Math.ceil(numberOfGroups);
+
+        if (page == lastGroupNumber) {
+            // pagination refers to last page
+            end = (short) all.size();
+        } else {
+            end = (short) (page * perPage);
+        }
+
+        if (start >= all.size() || end > all.size()) {
             return ResponseEntity
-                .badRequest()
-                .body(new Response("Invalid pagination parameters", null));
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new Response("Invalid pagination parameters", null));
         }
 
         List<Worker> paginated = all.subList(start, end);
-        List<FetchWorkerResponseDTO> ret = new ArrayList<FetchWorkerResponseDTO>();
-        paginated.forEach(a -> ret.add(a.fetchWorkerResponseDTO()));
 
         return ResponseEntity
-            .ok()
+            .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully fetched all workers",
-                ret
-                ));
+                paginated.stream()
+                    .map(worker -> worker.convertToResponseDTO())
+                    .collect(Collectors.toList())
+            ));
     }
 
     @GetMapping("/{id}")
@@ -72,13 +83,12 @@ public class WorkerController {
 
         if (workerOptional.isPresent()) {
             Worker worker = workerOptional.get();
-            FetchWorkerResponseDTO response = worker.fetchWorkerResponseDTO();
+            FetchWorkerResponseDTO response = worker.convertToResponseDTO();
 
             return ResponseEntity
-                .ok()
+                .status(HttpStatus.OK)
                 .body(new Response("Successfully fetched worker with specified id", response));
-        }
-        else {
+        } else {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new Response("Could not find worker with specified id", null));
@@ -92,17 +102,107 @@ public class WorkerController {
             try {
                 Short id = body.pizzeria_id();
                 Optional<Pizzeria> pizzeria = pizzeriaRepository.findById(id);
-                if (!pizzeria.isPresent())
+
+                if (pizzeria.isPresent()) {
+                    worker.setPizzeria(pizzeria.get());
+                } else {
+                    return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(new Response("Could not find pizzeria with specified id", null));
+                }
+
+                Worker createdWorker = this.repository.save(worker);
+
+                return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new Response(
+                        "Successfully created worker",
+                        createdWorker.convertToResponseDTO()
+                    ));
             }
             catch (Exception error) {
-
+                return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Could not create new worker", null));
             }
         }
         catch (Exception error) {
-            ResponseEntity
-                .internalServerError()
-                .body(new Response("Could not create new worker", null));
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new Response("Could not create new worker", null));
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Response> deleteWorker(@PathVariable(name = "id") Long workerId) {
+        Optional<Worker> workerOptional = this.repository.findById(workerId);
+
+        if (workerOptional.isPresent()) {
+            this.repository.deleteById(workerId);
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response("Successfully deleted worker with specified id", null));
+        }
+        else {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new Response("Worker with specified id does not exist", null));
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Response> updateWorker(@RequestBody @Valid UpdateWorkerRequestDTO body) {
+        Optional<Worker> workerOptional = this.repository.findById(body.id());
+
+        if (workerOptional.isPresent()) {
+            Worker worker = workerOptional.get();
+
+            try {
+                if (body.fullname().length() != 0 || body.fullname() != null) {
+                    try {
+                        worker.setFullname(body.fullname());
+                    } catch (Exception error) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid fullname format", null));
+                    }
+                }
+
+                if (body.email().length() != 0 || body.email() != null) {
+                    try {
+                        worker.setEmail(body.email());
+                    } catch (Exception error) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid email format", null));
+                    }
+                }
+
+                if (body.password().length() != 0 || body.password() != null) {
+                    try {
+                        worker.setPassword(body.password());
+                    } catch (Exception error) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid password format", null));
+                    }
+                }
+
+                if (body.pizzeriaCode() == 0 || body.pizzeriaCode() == null) {
+                    try {
+
+
+                    } catch (Exception error) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid pizzaria code format", null));
+                    }
+                }
+            }
+            catch (Exception error) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Failed to retrieve informed parameters", null));
+            }
+        }
+        else {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new Response(
+                    "Failed to update worker",
+                    null
+                ));
+        }
+    }
 }

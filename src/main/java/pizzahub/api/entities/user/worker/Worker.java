@@ -89,7 +89,7 @@ public class Worker {
         setRole(data.role());
     }
 
-    public FetchWorkerResponseDTO fetchWorkerResponseDTO() {
+    public FetchWorkerResponseDTO convertToResponseDTO() {
         return new FetchWorkerResponseDTO(
             getId(),
             getFullname(),

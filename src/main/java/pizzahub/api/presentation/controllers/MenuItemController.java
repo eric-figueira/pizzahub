@@ -189,7 +189,7 @@ public class MenuItemController {
                     try {
                         itemMenu.setName(body.name());
                     } catch (Exception error) {
-                        return ResponseEntity.badRequest().body(new Response("Invalid name format", null));
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid name format", null));
                     }
                 }
 
@@ -197,7 +197,7 @@ public class MenuItemController {
                     try {
                         itemMenu.setPrice(body.price());
                     } catch (Exception error) {
-                        return ResponseEntity.badRequest().body(new Response("Invalid price format", null));
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid price format", null));
                     }
                 }
 
@@ -214,25 +214,30 @@ public class MenuItemController {
                     } catch (EntityNotFoundException error) {
                         return ResponseEntity.notFound().build();
                     } catch (IllegalArgumentException error) {
-                        return ResponseEntity.badRequest().body(new Response("Invalid ingredients list", null));
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid ingredients list", null));
                     }
                 }
 
             } catch (Exception error) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Failed to retrieve informed parameters", null));
             }
 
             MenuItem updatedMenuItem = this.repository.save(itemMenu);
 
             return ResponseEntity
-                .ok()
+                .status(HttpStatus.OK)
                 .body(new Response(
                     "Successfully updated Menu Item",
                     updatedMenuItem.convertToResponseDTO()
                 ));
         }
         else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new Response(
+                    "Failed to update menu item",
+                    null
+                ));
         }
     }
 }
