@@ -2,6 +2,8 @@ package pizzahub.api.entities.ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +17,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pizzahub.api.entities.ingredient.data.CreateIngredientRequestDTO;
+import pizzahub.api.entities.ingredient.data.FetchIngredientsResponseDTO;
 import pizzahub.api.entities.menuitem.MenuItem;
 
 @Getter
@@ -49,5 +52,13 @@ public class Ingredient {
 
     public Ingredient(CreateIngredientRequestDTO data) throws Exception {
         this.setName(data.name());
+    }
+
+    public FetchIngredientsResponseDTO convertToResponseDTO() {
+        return new FetchIngredientsResponseDTO(
+            this.getId(),
+            this.getName(),
+            this.getMenuItems().stream().map(MenuItem::getName).collect(Collectors.toList())
+        );
     }
 }

@@ -91,11 +91,11 @@ public class Worker {
 
     public FetchWorkerResponseDTO convertToResponseDTO() {
         return new FetchWorkerResponseDTO(
-            getId(),
-            getFullname(),
-            getEmail(),
-            getPassword(),
-            getRole(),
-            getPizzeria().getCode());
+            this.getId(),
+            this.getFullname(),
+            this.getEmail(),
+            this.getPassword(),
+            this.getRole(),
+            this.getPizzeria().getCode());
     }
 }

@@ -8,11 +8,4 @@ public record FetchMenuItemsResponseDTO (
     BigDecimal price,
     String name,
     List<String> ingredientNames
-) {
-    public FetchMenuItemsResponseDTO(Long id, BigDecimal price, String name, List<String> ingredientNames) {
-        this.id = id;
-        this.price = price;
-        this.name = name;
-        this.ingredientNames = ingredientNames;
-    }
-}
+) { }

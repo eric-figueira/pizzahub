@@ -3,6 +3,7 @@ package pizzahub.api.presentation.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.ingredient.data.CreateIngredientRequestDTO;
+import pizzahub.api.entities.ingredient.data.FetchIngredientsResponseDTO;
+import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.IngredientRepository;
 
 @RestController
@@ -27,29 +30,68 @@ public class IngredientController {
     private IngredientRepository repository;
 
     @GetMapping
-    public ResponseEntity<List<Ingredient>> fetchIngredients (
+    public ResponseEntity<Response> fetchIngredients (
         @RequestParam(value = "page", defaultValue = "1") short page,
         @RequestParam(value = "perPage", defaultValue = "30") short perPage
     ) {
         List<Ingredient> all = this.repository.findAll();
 
+        // pagination
         short start = (short) ((page - 1) * perPage);
-        short end   = (short) (page * perPage);
+        short end = 1;
 
-        if (start <= all.size() || end >= all.size()) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ArrayList<Ingredient>());
+        double numberOfGroups = (double) all.size() / perPage;
+        short lastGroupNumber = (short) Math.ceil(numberOfGroups);
+
+        if (page == lastGroupNumber) {
+            // pagination refers to last page
+            end = (short) all.size();
+        } else {
+            end = (short) (page * perPage);
         }
 
-        List<Ingredient> paginated = all.subList((page - 1) * perPage, page * perPage);
+        if (start >= all.size() || end > all.size()) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new Response("Invalid pagination parameters", null));
+        }
 
-        return ResponseEntity.ok(paginated);
+        List<Ingredient> paginated = all.subList(start, end);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully fetched all ingredients",
+                paginated.stream()
+                    .map(ingredient -> ingredient.convertToResponseDTO())
+                    .collect(Collectors.toList())
+            ));
     }
 
     @GetMapping("/{id}")
-    public Optional<Ingredient> fetchIngredientById(@PathVariable("id") Long ingredientId) {
-        return this.repository.findById(ingredientId);
+    public ResponseEntity<Response> fetchIngredientById(@PathVariable("id") Long ingredientId) {
+        Optional<Ingredient> optionalIngredient = this.repository.findById(ingredientId);
+
+        if (optionalIngredient.isPresent()) {
+            Ingredient menuItem = optionalIngredient.get();
+
+            FetchIngredientsResponseDTO response = menuItem.convertToResponseDTO();
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response(
+                    "Successfully fetched ingredient with specified id",
+                    response
+                ));
+        }
+        else {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new Response(
+                    "Could not find ingredient with specified id",
+                    null
+                ));
+        }
     }
 
     @PostMapping
