@@ -56,7 +56,8 @@ public class MenuItemController {
     public ResponseEntity<Response> fetchMenuItems(
         @RequestParam(value = "page", defaultValue = "1") short page,
         @RequestParam(value = "perPage", defaultValue = "30") short perPage,
-        @RequestParam(value = "orderBy", defaultValue = "") String orderBy
+        @RequestParam(value = "orderBy", defaultValue = "") String orderBy,
+        @RequestParam(value = "order", defaultValue = "asc") String order
     ) {
         List<MenuItem> all = this.repository.findAll();
 
@@ -85,7 +86,10 @@ public class MenuItemController {
         // ordenation
         switch (orderBy) {
             case "price":
-                paginated.sort(Comparator.comparing(MenuItem::getPrice));
+                if (order.equalsIgnoreCase("asc"))
+                    paginated.sort(Comparator.comparing(MenuItem::getPrice));
+                else
+                    paginated.sort(Comparator.comparing(MenuItem::getPrice).reversed());
                 break;
 
             default:

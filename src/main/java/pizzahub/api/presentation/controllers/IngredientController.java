@@ -1,6 +1,7 @@
 package pizzahub.api.presentation.controllers;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +33,8 @@ public class IngredientController {
     @GetMapping
     public ResponseEntity<Response> fetchIngredients (
         @RequestParam(value = "page", defaultValue = "1") short page,
-        @RequestParam(value = "perPage", defaultValue = "30") short perPage
+        @RequestParam(value = "perPage", defaultValue = "30") short perPage,
+        @RequestParam(value = "orderByCount", defaultValue = "asc") String order
     ) {
         List<Ingredient> all = this.repository.findAll();
 
@@ -57,6 +59,16 @@ public class IngredientController {
         }
 
         List<Ingredient> paginated = all.subList(start, end);
+
+        switch (order) {
+            case "desc":
+                paginated.sort(Comparator.comparingInt(item -> ((Ingredient) item).getMenuItems().size()).reversed());
+                break;
+
+            default:
+                paginated.sort(Comparator.comparingInt(item -> ((Ingredient) item).getMenuItems().size()));
+                break;
+        }
 
         return ResponseEntity
             .status(HttpStatus.OK)
