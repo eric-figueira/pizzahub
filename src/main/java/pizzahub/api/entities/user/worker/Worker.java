@@ -37,7 +37,7 @@ public class Worker {
     private Role role;
 
     @OneToOne
-    @JoinColumn(name = "code")
+    @JoinColumn(name = "code_pizzeria")
     private Pizzeria pizzeria;
 
     public void setId(Long id) throws Exception {
