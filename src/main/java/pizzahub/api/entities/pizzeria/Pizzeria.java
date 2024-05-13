@@ -2,16 +2,14 @@ package pizzahub.api.entities.pizzeria;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.user.Role;
-import pizzahub.api.entities.user.worker.Worker;
+import pizzahub.api.entities.pizzeria.data.CreatePizzeriaRequestDTO;
+import pizzahub.api.entities.pizzeria.data.FetchPizzeriaResponseDTO;
 import pizzahub.api.utils.RegexValidator;
 
 @Getter
@@ -28,11 +26,7 @@ public class Pizzeria {
     private String secondContact;
     private String email;
     private String cep;
-    private String telephoneNumber;
-
-    @OneToOne
-    @JoinColumn(name = "id")
-    private Worker manager;
+    private Short addressNumber;
 
     public void setCode(short code) {
         if (code <= 0) {
@@ -75,25 +69,31 @@ public class Pizzeria {
         this.cep = cep;
     }
 
-    public void setTelephoneNumber(String telephoneNumber) {
-        if (telephoneNumber == null || telephoneNumber.trim().isEmpty()) {
+    public void setAddressNumber(Short addressNumber) {
+        if (addressNumber == null || addressNumber == 0) {
             throw new IllegalArgumentException("[Pizzeria]: Telephone cannot be null or empty");
         }
-        if (!RegexValidator.validateTelephoneNumber(telephoneNumber)) {
-            throw new IllegalArgumentException("[Pizzeria]: Invalid telephone number format");
-        }
-        this.telephoneNumber = telephoneNumber;
+        this.addressNumber = addressNumber;
     }
 
-    public void setManager(Worker worker) {
-        if (worker == null) {
-            throw new IllegalArgumentException("[Pizzeria]: Worker cannot be null");
-        }
-        if (worker.getRole() != Role.MANAGER) {
-            throw new IllegalArgumentException("[Pizzeria]: Worker must be a manager");
-        }
-        this.manager = worker;
+    public Pizzeria(CreatePizzeriaRequestDTO pizzeria) throws Exception {
+        setAddressNumber(pizzeria.addressNumber());
+        setCep(pizzeria.cep());
+        setCode(pizzeria.code());
+        setEmail(pizzeria.email());
+        setFirstContact(pizzeria.firstContact());
+        if (pizzeria.secondContact() != null)
+            setSecondContact(pizzeria.secondContact());
     }
 
-    // public Pizzeria() {}
+    public FetchPizzeriaResponseDTO convertToResponseDTO() {
+        return new FetchPizzeriaResponseDTO(
+            this.getCode(),
+            this.getFirstContact(),
+            this.getSecondContact(),
+            this.getEmail(),
+            this.getCep(),
+            this.getAddressNumber()
+        );
+    }
 }

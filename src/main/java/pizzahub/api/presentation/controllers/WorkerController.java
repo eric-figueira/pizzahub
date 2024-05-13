@@ -127,8 +127,8 @@ public class WorkerController {
         }
         catch (Exception error) {
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("Could not create new worker", null));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("Could not create new worker", null));
         }
     }
 
