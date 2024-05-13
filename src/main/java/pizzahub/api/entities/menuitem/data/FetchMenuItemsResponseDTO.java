@@ -1,5 +1,7 @@
 package pizzahub.api.entities.menuitem.data;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.util.List;
 
