@@ -11,7 +11,7 @@ import pizzahub.api.entities.order.PaymentMethod;
 
 public record CreateOrderRequestDTO (
     @NotNull short number,
-    // @NotNull Long clientId,
+    @NotNull Long customerId,
 
     @NotNull Date orderDate,
     @NotNull LocalTime orderTime,
@@ -20,5 +20,5 @@ public record CreateOrderRequestDTO (
 
     PaymentMethod paymentMethod,
 
-    @NotNull OrderStatus orderStatus) {
-}
+    @NotNull OrderStatus orderStatus
+) {}

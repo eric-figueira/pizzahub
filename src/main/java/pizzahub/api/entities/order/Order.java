@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.Date;
 // import java.util.UUID;
 
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,6 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pizzahub.api.entities.order.data.CreateOrderRequestDTO;
+import pizzahub.api.entities.user.customer.Customer;
 
 @Getter
 @NoArgsConstructor
@@ -34,9 +37,9 @@ public class Order {
 
     private short number;
 
-    // @OneToOne
-    // @JoinColumn(name = "id")
-    // private Long clientId;
+    @OneToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     private Date orderDate;
     private LocalTime orderTime;
@@ -63,12 +66,12 @@ public class Order {
         this.number = number;
     }
 
-    // public void setClientId(Long clientId) {
-    //     if (clientId == null || clientId == 0) {
-    //         throw new IllegalArgumentException("[Order]: Client id cannot be null");
-    //     }
-    //     this.clientId = clientId;
-    // }
+    public void setCustomer(Customer customer) {
+        if (customer == null) {
+            throw new IllegalArgumentException("[Order]: Customer cannot be null");
+        }
+        this.customer = customer;
+    }
 
     public void setOrderDate(Date orderDate) {
         if (orderDate == null || orderDate.after(new Date())) {
@@ -107,7 +110,6 @@ public class Order {
 
     public Order(CreateOrderRequestDTO data) throws Exception
     {
-        // this.setClientId(data.clientId());
         this.setNumber(data.number());
         this.setOrderDate(data.orderDate());
         this.setOrderStatus(data.orderStatus());
