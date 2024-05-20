@@ -8,12 +8,11 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
 public class Address {
     private String cep;
-    private String streetName;
-    private String complement;
-    private String neighborhood;
-    private String locale;
+    private String logradouro;
+    private String complemento;
+    private String bairro;
+    private String localidade;
     private String uf;
 }

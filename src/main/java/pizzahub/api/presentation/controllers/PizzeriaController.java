@@ -96,10 +96,14 @@ public class PizzeriaController {
     @PostMapping
     public ResponseEntity<Response> createPizzeria(@RequestBody CreatePizzeriaRequestDTO body) {
         try {
-            Pizzeria pizzeria = new Pizzeria(body);
+            System.out.println("-------------------- AAAAAA");
+            //Pizzeria pizzeria = new Pizzeria(body);
 
-            String cep = pizzeria.getCep();
-            Address address = this.cepClient.fetchAddressByCep(cep);
+            //String cep = pizzeria.getCep();
+            String cep = body.cep();
+            System.out.println(cep);
+            Address address = cepClient.fetchAddressByCep(cep);
+            System.out.println("-------------------- CCCCCCCC");
 
             //Pizzeria savedPizzeria = this.repository.save(pizzeria);
 
@@ -111,6 +115,7 @@ public class PizzeriaController {
                 ));
         }
         catch (Exception error) {
+            System.out.println("-------------------- DDDDDDD");
             return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response("An error occured when trying to create a new pizzeria", null));
