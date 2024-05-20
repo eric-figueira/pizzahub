@@ -35,14 +35,14 @@ public class Pizzeria {
         this.code = code;
     }
 
-    public void setFirstContact(String firstContact) {
+    public void setFirstContact(String firstContact) throws Exception {
         if (firstContact == null || firstContact.trim().isEmpty()) {
             throw new IllegalArgumentException("[Pizzeria]: First contact cannot be null or empty");
         }
         this.firstContact = firstContact;
     }
 
-    public void setSecondContact(String secondContact) {
+    public void setSecondContact(String secondContact) throws Exception {
         if (secondContact == null || secondContact.trim().isEmpty()) {
             throw new IllegalArgumentException("[Pizzeria]: Second contact cannot be null or empty");
         }

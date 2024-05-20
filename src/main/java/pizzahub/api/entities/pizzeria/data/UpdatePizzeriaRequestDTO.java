@@ -4,17 +4,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdatePizzeriaRequestDTO (
     @NotNull
+    Short code,
+
     String firstContact,
-
     String secondContact,
-
-    @NotNull
     String email,
-
-    @NotNull
     String cep,
-
-    @NotNull
-    short addressNumber
-)
-{}
+    Short addressNumber
+) {}

@@ -227,7 +227,7 @@ public class MenuItemController {
                 }
 
             } catch (Exception error) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Failed to retrieve informed parameters", null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Failed to update informed parameters", null));
             }
 
             MenuItem updatedMenuItem = this.repository.save(itemMenu);

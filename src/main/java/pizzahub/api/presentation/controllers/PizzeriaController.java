@@ -2,6 +2,7 @@ package pizzahub.api.presentation.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,8 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.pizzeria.data.CreatePizzeriaRequestDTO;
+import pizzahub.api.entities.pizzeria.data.FetchPizzeriaResponseDTO;
+import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaRequestDTO;
+import pizzahub.api.infrastructure.cep.Address;
+import pizzahub.api.infrastructure.cep.ViaCepClient;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.PizzeriaRepository;
 
@@ -19,17 +25,21 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping("/pizzeria")
+@RequestMapping("/pizzerias")
 public class PizzeriaController {
     @Autowired
     PizzeriaRepository repository;
 
+    @Autowired
+    private ViaCepClient cepClient;
+
     @GetMapping
-    public ResponseEntity<Response> fetchPizzeria(
+    public ResponseEntity<Response> fetchPizzerias(
             @RequestParam(value = "page", defaultValue = "1") short page,
             @RequestParam(value = "perPage", defaultValue = "30") short perPage,
             @RequestParam(value = "orderBy", defaultValue = "name") String name
@@ -63,23 +73,47 @@ public class PizzeriaController {
             .body(new Response("Successfully fetched all pizzeria", paginated));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Response> fetchPizzeriaByCode(@PathVariable("id") Short pizzeriaId) {
+        Optional<Pizzeria> pizzeriaOptional = this.repository.findByCode(pizzeriaId);
+
+        if (pizzeriaOptional.isPresent()) {
+            Pizzeria pizzeria = pizzeriaOptional.get();
+
+            FetchPizzeriaResponseDTO response = pizzeria.convertToResponseDTO();
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response("Successfully fetched pizzeria with specified id", response));
+        }
+        else {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new Response("Could not fetch pizzeria with specified ID", null));
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Response> createPizzeria(@RequestBody CreatePizzeriaRequestDTO body) {
         try {
             Pizzeria pizzeria = new Pizzeria(body);
-            Pizzeria createdPizzeria = this.repository.save(pizzeria);
+
+            String cep = pizzeria.getCep();
+            Address address = this.cepClient.fetchAddressByCep(cep);
+
+            //Pizzeria savedPizzeria = this.repository.save(pizzeria);
 
             return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response(
-                    "Successfully created worker",
-                    createdPizzeria.convertToResponseDTO()
+                    "Successfully created new pizzeria",
+                    address.toString()
                 ));
         }
         catch (Exception error) {
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new Response("Could not create pizzeria", null));
+                .body(new Response("An error occured when trying to create a new pizzeria", null));
         }
     }
 
@@ -97,9 +131,104 @@ public class PizzeriaController {
         else {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new Response("Pizzeria with specified id does not exist", null));
+                .body(new Response("Could not retrieve pizzeria with specified id in order to remove it", null));
         }
     }
 
+    @PutMapping
+    public ResponseEntity<Response> updatePizzeria(@RequestBody @Valid UpdatePizzeriaRequestDTO body) {
+        Optional<Pizzeria> optionalPizzeria = this.repository.findByCode(body.code());
 
+        if (optionalPizzeria.isPresent()) {
+            Pizzeria pizzeria = optionalPizzeria.get();
+
+            try {
+                if (body.firstContact() != null) {
+                    try {
+                        pizzeria.setFirstContact(body.firstContact());
+                    } catch (Exception error) {
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'first contact' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
+                    }
+                }
+
+                if (body.secondContact() != null) {
+                    try {
+                        pizzeria.setSecondContact(body.secondContact());
+                    } catch (Exception error) {
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'second contact' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
+                    }
+                }
+
+                if (body.email() != null) {
+                    try {
+                        pizzeria.setEmail(body.email());
+                    } catch (Exception error) {
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'email' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
+                    }
+                }
+
+                // TODO: Use Via CEP Service in order to retrieve address information
+                if (body.cep() != null) {
+                    try {
+                        pizzeria.setCep(body.cep());
+                    } catch (Exception error) {
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'CEP' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
+                    }
+                }
+
+                if (body.addressNumber() != null) {
+                    try {
+                        pizzeria.setAddressNumber(body.addressNumber());
+                    } catch (Exception error) {
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'address number' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
+                    }
+                }
+
+            } catch (Exception error) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Failed to retrieve informed parameters", null));
+            }
+
+            Pizzeria updatedPizzeria = this.repository.save(pizzeria);
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response(
+                    "Successfully updated pizzeria",
+                    updatedPizzeria.convertToResponseDTO()
+                ));
+        }
+        else {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new Response(
+                    "Failed to update pizzeria",
+                    null
+                ));
+        }
+    }
 }

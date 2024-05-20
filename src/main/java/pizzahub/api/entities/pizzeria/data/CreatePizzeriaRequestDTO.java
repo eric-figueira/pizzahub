@@ -18,6 +18,5 @@ public record CreatePizzeriaRequestDTO (
     String cep,
 
     @NotNull
-    short addressNumber
-)
-{}
+    Short addressNumber
+) {}
