@@ -38,9 +38,9 @@ public class WorkerController {
 
     @GetMapping
     public ResponseEntity<Response> fetchWorkers(
-            @RequestParam(value = "page", defaultValue = "1") short page,
-            @RequestParam(value = "perPage", defaultValue = "30") short perPage,
-            @RequestParam(value = "orderBy", defaultValue = "name") String name
+        @RequestParam(value = "page", defaultValue = "1") short page,
+        @RequestParam(value = "perPage", defaultValue = "30") short perPage,
+        @RequestParam(value = "orderBy", defaultValue = "name") String name
     ) {
         List<Worker> all = this.repository.findAll();
 
@@ -60,8 +60,8 @@ public class WorkerController {
 
         if (start >= all.size() || end > all.size()) {
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new Response("Invalid pagination parameters", null));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new Response("Invalid pagination parameters", null));
         }
 
         List<Worker> paginated = all.subList(start, end);
@@ -99,8 +99,7 @@ public class WorkerController {
         try {
             Worker worker = new Worker(body);
             try {
-                Short id = body.pizzeriaCode();
-                Optional<Pizzeria> pizzeria = pizzeriaRepository.findByCode(id);
+                Optional<Pizzeria> pizzeria = pizzeriaRepository.findByCode(body.pizzeriaCode());
 
                 if (pizzeria.isPresent()) {
                     worker.setPizzeria(pizzeria.get());

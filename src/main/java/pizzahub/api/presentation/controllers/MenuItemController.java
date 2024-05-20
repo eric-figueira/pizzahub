@@ -36,16 +36,6 @@ import pizzahub.api.presentation.Response;
 @RequestMapping(value = "/menuitems")
 public class MenuItemController {
 
-    /*
-     * To Do:
-     * [x] Pagination
-     * [x] Order by price
-     * [] Post (must have permission)
-     * [] Delete (must have permission)
-     * [] Update (must have permission)
-     * [] Refactor PUT method (Ingredients Ids) to make it more efficient
-    */
-
     @Autowired
     private MenuItemRepository repository;
 
@@ -75,10 +65,13 @@ public class MenuItemController {
             end = (short) (page * perPage);
         }
 
-        if (start >= all.size() || end > all.size()) {
+        if (start >= all.size()) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new Response("Invalid pagination parameters", null));
+                .body(new Response(
+                    "The pagination parameters are invalid. Please ensure that 'page' is smaller than the total data size",
+                    null
+                ));
         }
 
         List<MenuItem> paginated = all.subList(start, end);
@@ -122,7 +115,7 @@ public class MenuItemController {
         else {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new Response("Could not found menu item with specified id", null));
+                .body(new Response("Could not fetch menu item with specified ID", null));
         }
     }
 
@@ -143,7 +136,7 @@ public class MenuItemController {
             } catch (EntityNotFoundException error) {
                 return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body(new Response("Could not found ingredient", null));
+                    .body(new Response("Failed to retrieve one of the ingredients informed by ID", null));
             }
 
             MenuItem savedMenuItem = this.repository.save(newMenuItem);
@@ -158,13 +151,12 @@ public class MenuItemController {
         catch (Exception error) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("Could not create new menu item", null));
+                    .body(new Response("An error occured when trying to create a new menu item", null));
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Response> deleteMenuItem(@PathVariable("id") Long menuItemId) {
-        // TODO: Must have permission
         Optional<MenuItem> menuItemOptional = this.repository.findById(menuItemId);
 
         if (menuItemOptional.isPresent()) {
@@ -177,7 +169,7 @@ public class MenuItemController {
         else {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new Response("Menu item with specified id does not exist", null));
+                .body(new Response("Could not retrieve menu item with specified id in order to remove it", null));
         }
     }
 
@@ -193,7 +185,12 @@ public class MenuItemController {
                     try {
                         itemMenu.setName(body.name());
                     } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid name format", null));
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'name' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
                     }
                 }
 
@@ -201,7 +198,12 @@ public class MenuItemController {
                     try {
                         itemMenu.setPrice(body.price());
                     } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid price format", null));
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'price' parameter provided. Please ensure the value is not null and its value is greater than zero",
+                                null
+                            ));
                     }
                 }
 
@@ -216,9 +218,11 @@ public class MenuItemController {
 
                         itemMenu.setIngredients(ingredients);
                     } catch (EntityNotFoundException error) {
-                        return ResponseEntity.notFound().build();
+                        return ResponseEntity
+                            .status(HttpStatus.NOT_FOUND)
+                            .body(new Response("Could not retrieve one of the ingredients with specified id", null));
                     } catch (IllegalArgumentException error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid ingredients list", null));
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid 'ingredients ids' list parameter provided. Please ensure the list is not null or empty", null));
                     }
                 }
 
