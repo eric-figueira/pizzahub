@@ -110,7 +110,7 @@ public class PizzeriaController {
                 .status(HttpStatus.OK)
                 .body(new Response(
                     "Successfully created new pizzeria",
-                    address.toString()
+                    savedPizzeria.convertToResponseDTO()
                 ));
         }
         catch (Exception error) {
@@ -185,15 +185,35 @@ public class PizzeriaController {
                     }
                 }
 
-                // TODO: Use Via CEP Service in order to retrieve address information
                 if (body.cep() != null) {
                     try {
+                        String cep = body.cep();
+
+                        Address address = cepClient.fetchAddressByCep(cep);
+                        pizzeria.setCity(address.getLocalidade());
+                        pizzeria.setNeighborhood(address.getBairro());
+                        pizzeria.setUf(address.getUf());
+                        pizzeria.setStreetName(address.getLogradouro());
                         pizzeria.setCep(body.cep());
+
                     } catch (Exception error) {
                         return ResponseEntity
                             .status(HttpStatus.BAD_REQUEST)
                             .body(new Response(
                                 "Invalid 'CEP' parameter provided. Please ensure the value is not null and its length is greater than zero",
+                                null
+                            ));
+                    }
+                }
+
+                if (body.complement() != null) {
+                    try {
+                        pizzeria.setComplement(body.complement());
+                    } catch (Exception error) {
+                        return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(new Response(
+                                "Invalid 'complement' parameter provided. Please ensure the value is not null and its length is greater than zero",
                                 null
                             ));
                     }
