@@ -10,5 +10,6 @@ public record UpdatePizzeriaRequestDTO (
     String secondContact,
     String email,
     String cep,
+    String complement,
     Short addressNumber
 ) {}

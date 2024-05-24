@@ -3,20 +3,22 @@ package pizzahub.api.entities.pizzeria.data;
 import jakarta.validation.constraints.NotNull;
 
 public record CreatePizzeriaRequestDTO (
-    //@NotNull
+    @NotNull
     Short code,
 
-    //@NotNull
+    @NotNull
     String firstContact,
 
     String secondContact,
 
-    //@NotNull
+    @NotNull
     String email,
 
-    //@NotNull
+    @NotNull
     String cep,
 
-    //@NotNull
+    String complement,
+
+    @NotNull
     Short addressNumber
 ) {}

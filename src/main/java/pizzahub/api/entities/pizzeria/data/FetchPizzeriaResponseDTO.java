@@ -1,11 +1,15 @@
 package pizzahub.api.entities.pizzeria.data;
 
 public record FetchPizzeriaResponseDTO (
-    short code,
+    Short code,
     String firstContact,
     String secondContact,
     String email,
     String cep,
-    short addressNumber
-)
-{}
+    String streetName,
+    String neighborhood,
+    String city,
+    String uf,
+    String complement,
+    Short addressNumber
+) {}

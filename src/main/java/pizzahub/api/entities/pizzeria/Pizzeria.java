@@ -26,6 +26,11 @@ public class Pizzeria {
     private String secondContact;
     private String email;
     private String cep;
+    private String streetName;
+    private String neighborhood;
+    private String city;
+    private String uf;
+    private String complement;
     private Short addressNumber;
 
     public void setCode(short code) {
@@ -69,6 +74,41 @@ public class Pizzeria {
         this.cep = cep;
     }
 
+    public void setStreetName(String streetName) throws Exception {
+        if (streetName == null || streetName.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Pizzeria]: Street name cannot be null or empty");
+        }
+        this.streetName = streetName;
+    }
+
+    public void setNeighborhood(String neighborhood) throws Exception {
+        if (neighborhood == null || neighborhood.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Pizzeria]: Neighborhood cannot be null or empty");
+        }
+        this.neighborhood = neighborhood;
+    }
+
+    public void setCity(String city) throws Exception {
+        if (city == null || city.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Pizzeria]: City cannot be null or empty");
+        }
+        this.city = city;
+    }
+
+    public void setUf(String uf) throws Exception {
+        if (uf == null || uf.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Pizzeria]: UF cannot be null or empty");
+        }
+        this.uf = uf;
+    }
+
+    public void setComplement(String complement) throws Exception {
+        if (complement == null || complement.trim().isEmpty()) {
+            throw new IllegalArgumentException("[Pizzeria]: Complement cannot be null or empty");
+        }
+        this.complement = complement;
+    }
+
     public void setAddressNumber(Short addressNumber) {
         if (addressNumber == null || addressNumber == 0) {
             throw new IllegalArgumentException("[Pizzeria]: Telephone cannot be null or empty");
@@ -82,6 +122,8 @@ public class Pizzeria {
         setCode(pizzeria.code());
         setEmail(pizzeria.email());
         setFirstContact(pizzeria.firstContact());
+        if (pizzeria.complement() != null)
+            setComplement(pizzeria.complement());
         if (pizzeria.secondContact() != null)
             setSecondContact(pizzeria.secondContact());
     }
@@ -93,6 +135,11 @@ public class Pizzeria {
             this.getSecondContact(),
             this.getEmail(),
             this.getCep(),
+            this.getStreetName(),
+            this.getNeighborhood(),
+            this.getCity(),
+            this.getUf(),
+            this.getComplement(),
             this.getAddressNumber()
         );
     }

@@ -2,11 +2,9 @@ package pizzahub.api.presentation.controllers;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -96,16 +94,17 @@ public class PizzeriaController {
     @PostMapping
     public ResponseEntity<Response> createPizzeria(@RequestBody CreatePizzeriaRequestDTO body) {
         try {
-            System.out.println("-------------------- AAAAAA");
-            //Pizzeria pizzeria = new Pizzeria(body);
+            Pizzeria pizzeria = new Pizzeria(body);
 
-            //String cep = pizzeria.getCep();
             String cep = body.cep();
-            System.out.println(cep);
-            Address address = cepClient.fetchAddressByCep(cep);
-            System.out.println("-------------------- CCCCCCCC");
 
-            //Pizzeria savedPizzeria = this.repository.save(pizzeria);
+            Address address = cepClient.fetchAddressByCep(cep);
+            pizzeria.setCity(address.getLocalidade());
+            pizzeria.setNeighborhood(address.getBairro());
+            pizzeria.setUf(address.getUf());
+            pizzeria.setStreetName(address.getLogradouro());
+
+            Pizzeria savedPizzeria = this.repository.save(pizzeria);
 
             return ResponseEntity
                 .status(HttpStatus.OK)
@@ -115,7 +114,6 @@ public class PizzeriaController {
                 ));
         }
         catch (Exception error) {
-            System.out.println("-------------------- DDDDDDD");
             return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response("An error occured when trying to create a new pizzeria", null));
@@ -124,7 +122,7 @@ public class PizzeriaController {
 
     @DeleteMapping
     public ResponseEntity<Response> deletePizzeria(@PathVariable(name = "code") Short code) {
-        Optional<Pizzeria> pizzeriaOptional = this.repository.findById(code);
+        Optional<Pizzeria> pizzeriaOptional = this.repository.findByCode(code);
 
         if (pizzeriaOptional.isPresent()) {
             this.repository.deleteById(code);
