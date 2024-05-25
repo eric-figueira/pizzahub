@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pizzahub.api.entities.pizzeria.data.CreatePizzeriaRequestDTO;
-import pizzahub.api.entities.pizzeria.data.FetchPizzeriaResponseDTO;
+import pizzahub.api.entities.pizzeria.data.PizzeriaResponseDTO;
 import pizzahub.api.utils.RegexValidator;
 
 @Getter
@@ -128,8 +128,8 @@ public class Pizzeria {
             setSecondContact(pizzeria.secondContact());
     }
 
-    public FetchPizzeriaResponseDTO convertToResponseDTO() {
-        return new FetchPizzeriaResponseDTO(
+    public PizzeriaResponseDTO convertToResponseDTO() {
+        return new PizzeriaResponseDTO(
             this.getCode(),
             this.getFirstContact(),
             this.getSecondContact(),

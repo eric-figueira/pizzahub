@@ -1,6 +1,6 @@
 package pizzahub.api.entities.pizzeria.data;
 
-public record FetchPizzeriaResponseDTO (
+public record PizzeriaResponseDTO(
     Short code,
     String firstContact,
     String secondContact,

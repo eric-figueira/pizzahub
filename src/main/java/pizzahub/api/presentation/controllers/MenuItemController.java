@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
-import pizzahub.api.entities.menuitem.data.FetchMenuItemsResponseDTO;
+import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
 import pizzahub.api.entities.menuitem.data.UpdateMenuItemRequestDTO;
 
 import pizzahub.api.repositories.IngredientRepository;
@@ -106,7 +106,7 @@ public class MenuItemController {
         if (menuItemOptional.isPresent()) {
             MenuItem menuItem = menuItemOptional.get();
 
-            FetchMenuItemsResponseDTO response = menuItem.convertToResponseDTO();
+            MenuItemResponseDTO response = menuItem.convertToResponseDTO();
 
             return ResponseEntity
                 .status(HttpStatus.OK)

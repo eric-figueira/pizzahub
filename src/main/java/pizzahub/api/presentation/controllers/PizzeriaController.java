@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.pizzeria.data.CreatePizzeriaRequestDTO;
-import pizzahub.api.entities.pizzeria.data.FetchPizzeriaResponseDTO;
+import pizzahub.api.entities.pizzeria.data.PizzeriaResponseDTO;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaRequestDTO;
 import pizzahub.api.infrastructure.cep.Address;
 import pizzahub.api.infrastructure.cep.ViaCepClient;
@@ -78,7 +78,7 @@ public class PizzeriaController {
         if (pizzeriaOptional.isPresent()) {
             Pizzeria pizzeria = pizzeriaOptional.get();
 
-            FetchPizzeriaResponseDTO response = pizzeria.convertToResponseDTO();
+            PizzeriaResponseDTO response = pizzeria.convertToResponseDTO();
 
             return ResponseEntity
                 .status(HttpStatus.OK)

@@ -21,7 +21,7 @@ import lombok.ToString;
 
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
-import pizzahub.api.entities.menuitem.data.FetchMenuItemsResponseDTO;
+import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
 
 @Getter
 @NoArgsConstructor
@@ -79,8 +79,8 @@ public class MenuItem {
         this.setPrice(data.price());
     }
 
-    public FetchMenuItemsResponseDTO convertToResponseDTO() {
-        return new FetchMenuItemsResponseDTO(
+    public MenuItemResponseDTO convertToResponseDTO() {
+        return new MenuItemResponseDTO(
             this.getId(),
             this.getPrice(),
             this.getName(),

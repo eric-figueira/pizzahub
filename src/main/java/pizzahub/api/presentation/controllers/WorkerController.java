@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
-import pizzahub.api.entities.user.worker.data.FetchWorkerResponseDTO;
+import pizzahub.api.entities.user.worker.data.WorkerResponseDTO;
 import pizzahub.api.entities.user.worker.data.UpdateWorkerRequestDTO;
 import pizzahub.api.repositories.PizzeriaRepository;
 import pizzahub.api.repositories.WorkerRepository;
@@ -82,7 +82,7 @@ public class WorkerController {
 
         if (workerOptional.isPresent()) {
             Worker worker = workerOptional.get();
-            FetchWorkerResponseDTO response = worker.convertToResponseDTO();
+            WorkerResponseDTO response = worker.convertToResponseDTO();
 
             return ResponseEntity
                 .status(HttpStatus.OK)

@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pizzahub.api.entities.ingredient.data.CreateIngredientRequestDTO;
-import pizzahub.api.entities.ingredient.data.FetchIngredientsResponseDTO;
+import pizzahub.api.entities.ingredient.data.IngredientResponseDTO;
 import pizzahub.api.entities.menuitem.MenuItem;
 
 @Getter
@@ -53,8 +53,8 @@ public class Ingredient {
         this.setName(data.name());
     }
 
-    public FetchIngredientsResponseDTO convertToResponseDTO() {
-        return new FetchIngredientsResponseDTO(
+    public IngredientResponseDTO convertToResponseDTO() {
+        return new IngredientResponseDTO(
             this.getId(),
             this.getName(),
             this.getMenuItems().stream().map(MenuItem::getName).collect(Collectors.toList())
