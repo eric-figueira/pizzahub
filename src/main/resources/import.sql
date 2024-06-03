@@ -78,3 +78,5 @@ insert into menu_item_ingredients (menu_item_id, ingredient_id) values (6, 14)
 insert into pizzeria (code, first_contact, second_contact, email, cep, address_number) values (1, '(19)3135-5235', '(19)3034-9923', 'lonzo@zewoh.gb', '35500-352', 104)
 
 insert into worker (fullname, email, password, role, code_pizzeria) values ('Catherine Osborne', 'demivejec@jusnu.gov', 'Z9uanWj8gXRhxV', 'ANONYMOUS', 1)
+
+insert into "order" (number, customer_id, order_date, order_time, shipping_tax, payment_method, order_status) values (123, 1, '2024-06-03', '14:30:00', 10.50, 'CREDIT_CARD', 'IN_PROGRESS')

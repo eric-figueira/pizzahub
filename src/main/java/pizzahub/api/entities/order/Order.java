@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
 // import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
 
@@ -16,12 +17,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.ingredient.Ingredient;
+import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
 import pizzahub.api.entities.order.data.CreateOrderRequestDTO;
+import pizzahub.api.entities.order.data.OrderResponseDTO;
 import pizzahub.api.entities.user.customer.Customer;
 
 @Getter
@@ -29,7 +35,7 @@ import pizzahub.api.entities.user.customer.Customer;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "order")
+@Table(name = "\"order\"")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +47,7 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @Temporal(TemporalType.DATE)
     private Date orderDate;
     private LocalTime orderTime;
 
@@ -118,5 +125,18 @@ public class Order {
             this.setPaymentMethod(data.paymentMethod());
         if (data.shippingTax() != null)
             this.setShippingTax(data.shippingTax());
+    }
+
+    public OrderResponseDTO convertToResponseDTO() {
+        return new OrderResponseDTO(
+            this.getId(),
+            this.getNumber(),
+            this.getCustomer(),
+            this.getOrderDate(),
+            this.getOrderTime(),
+            this.getShippingTax(),
+            this.getPaymentMethod(),
+            this.getOrderStatus()
+        );
     }
 }

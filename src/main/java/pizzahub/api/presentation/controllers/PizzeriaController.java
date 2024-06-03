@@ -99,9 +99,9 @@ public class PizzeriaController {
             String cep = body.cep();
 
             Address address = cepClient.fetchAddressByCep(cep);
-            pizzeria.setCity(address.getLocalidade());
+            pizzeria.setCity(address.getCidade());
             pizzeria.setNeighborhood(address.getBairro());
-            pizzeria.setUf(address.getUf());
+            pizzeria.setUf(address.getEstado());
             pizzeria.setStreetName(address.getLogradouro());
 
             Pizzeria savedPizzeria = this.repository.save(pizzeria);
@@ -190,9 +190,9 @@ public class PizzeriaController {
                         String cep = body.cep();
 
                         Address address = cepClient.fetchAddressByCep(cep);
-                        pizzeria.setCity(address.getLocalidade());
+                        pizzeria.setCity(address.getCidade());
                         pizzeria.setNeighborhood(address.getBairro());
-                        pizzeria.setUf(address.getUf());
+                        pizzeria.setUf(address.getEstado());
                         pizzeria.setStreetName(address.getLogradouro());
                         pizzeria.setCep(body.cep());
 
