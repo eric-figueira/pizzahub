@@ -1,7 +1,11 @@
 package pizzahub.api.presentation.controllers;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +32,7 @@ import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
 import pizzahub.api.entities.order.Order;
+import pizzahub.api.entities.order.OrderStatus;
 import pizzahub.api.entities.order.data.CreateOrderRequestDTO;
 import pizzahub.api.entities.order.data.OrderResponseDTO;
 import pizzahub.api.entities.user.customer.Customer;
@@ -144,6 +149,8 @@ public class OrderController {
 
     @PostMapping()
     public ResponseEntity<Response> createOrder(@RequestBody @Valid CreateOrderRequestDTO body) {
+        LocalDate current = LocalDate.now();
+
         try {
             Order order = new Order(body);
 
@@ -157,6 +164,11 @@ public class OrderController {
                     .status(HttpStatus.NOT_FOUND)
                     .body(new Response("Failed to retrieve customer informed by ID", null));
             }
+
+            order.setOrderStatus(OrderStatus.NOT_INITIATED);
+
+            //order.setOrderDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            order.setOrderTime(LocalTime.now());
 
             Order savedOrder = this.repository.save(order);
 
