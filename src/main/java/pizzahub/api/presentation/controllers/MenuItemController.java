@@ -101,22 +101,14 @@ public class MenuItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Response> fetchMenuItemById(@PathVariable("id") Long menuItemId) {
-        Optional<MenuItem> menuItemOptional = this.repository.findById(menuItemId);
+        MenuItem menuItem = this.repository.findById(menuItemId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch menu item with specified ID"));
 
-        if (menuItemOptional.isPresent()) {
-            MenuItem menuItem = menuItemOptional.get();
+        MenuItemResponseDTO response = menuItem.convertToResponseDTO();
 
-            MenuItemResponseDTO response = menuItem.convertToResponseDTO();
-
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new Response("Successfully fetched menu item with specified id", response));
-        }
-        else {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new Response("Could not fetch menu item with specified ID", null));
-        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response("Successfully fetched menu item with specified id", response));
     }
 
     @PostMapping
@@ -129,7 +121,7 @@ public class MenuItemController {
                     .stream()
                     .map(ingredientId -> this.ingredientRepository
                         .findById(ingredientId)
-                        .orElseThrow(() -> new EntityNotFoundException()))
+                        .orElseThrow(() -> new EntityNotFoundException("Failed to retrieve one of the ingredients informed by ID")))
                     .collect(Collectors.toList());
 
                 newMenuItem.setIngredients(ingredients);
@@ -157,20 +149,14 @@ public class MenuItemController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Response> deleteMenuItem(@PathVariable("id") Long menuItemId) {
-        Optional<MenuItem> menuItemOptional = this.repository.findById(menuItemId);
+        MenuItem exists = this.repository.findById(menuItemId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove it"));
 
-        if (menuItemOptional.isPresent()) {
-            this.repository.deleteById(menuItemId);
+        this.repository.deleteById(menuItemId);
 
-            return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new Response("Successfully deleted menu item with specified id", null));
-        }
-        else {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new Response("Could not retrieve menu item with specified id in order to remove it", null));
-        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response("Successfully deleted menu item with specified id", null));
     }
 
     @PutMapping
