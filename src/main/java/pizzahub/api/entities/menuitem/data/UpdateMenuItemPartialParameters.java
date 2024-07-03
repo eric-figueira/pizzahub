@@ -5,10 +5,7 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 
-public record UpdateMenuItemRequestDTO (
-    @NotNull
-    Long id,
-
+public record UpdateMenuItemPartialParameters(
     String name,
     BigDecimal price,
     List<Long> ingredientsIds

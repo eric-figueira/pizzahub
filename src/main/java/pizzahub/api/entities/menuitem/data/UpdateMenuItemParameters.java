@@ -1,0 +1,17 @@
+package pizzahub.api.entities.menuitem.data;
+
+import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+public record UpdateMenuItemParameters(
+    @NotNull
+    String name,
+
+    @NotNull
+    BigDecimal price,
+
+    @NotNull
+    List<Long> ingredientsIds
+) {}

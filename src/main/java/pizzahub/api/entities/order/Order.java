@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
 // import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.springframework.boot.autoconfigure.integration.IntegrationProperties.RSocket.Client;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,13 +16,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.ingredient.Ingredient;
-import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
 import pizzahub.api.entities.order.data.CreateOrderRequestDTO;
 import pizzahub.api.entities.order.data.OrderResponseDTO;
 import pizzahub.api.entities.user.customer.Customer;

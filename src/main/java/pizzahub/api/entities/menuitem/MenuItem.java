@@ -17,11 +17,9 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import pizzahub.api.entities.ingredient.Ingredient;
-import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
-import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
+import pizzahub.api.entities.menuitem.data.MenuItemResponse;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -52,13 +50,29 @@ public class MenuItem {
     @NotNull(message = "[Menu Item]: Ingredients list cannot be null")
     private List<Ingredient> ingredients;
 
-    public MenuItem(CreateMenuItemRequestDTO data) throws Exception {
-        this.setName(data.name());
-        this.setPrice(data.price());
+    public void setName(String itemName) {
+        if (itemName == null || itemName.trim().isEmpty() || itemName.length() < 5 || itemName.length() > 35) {
+            throw new IllegalArgumentException("Menu item's name must be between 5 and 35 characters and cannot be null or empty.");
+        }
+        this.name = itemName;
     }
 
-    public MenuItemResponseDTO convertToResponseDTO() {
-        return new MenuItemResponseDTO(
+    public void setPrice(BigDecimal price) {
+        if (price == null || price.signum() <= 0 || price.compareTo(new BigDecimal("250.0")) > 0) {
+            throw new IllegalArgumentException("Menu item's price must be greater than zero and less than or equal to 250.");
+        }
+        this.price = price;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        if (ingredients == null || ingredients.isEmpty()) {
+            throw new IllegalArgumentException("Menu item's ingredients list cannot be null or empty.");
+        }
+        this.ingredients = ingredients;
+    }
+
+    public MenuItemResponse convertToResponseDTO() {
+        return new MenuItemResponse(
             this.getId(),
             this.getPrice(),
             this.getName(),
