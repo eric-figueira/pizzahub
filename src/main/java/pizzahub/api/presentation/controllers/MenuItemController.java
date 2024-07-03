@@ -1,13 +1,13 @@
 package pizzahub.api.presentation.controllers;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -150,8 +150,8 @@ public class MenuItemController {
         }
         catch (Exception error) {
             return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new Response("An error occured when trying to create a new menu item", null));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new Response("An error occured when trying to create a new menu item", null));
         }
     }
 

@@ -13,17 +13,15 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-import lombok.Getter;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemRequestDTO;
 import pizzahub.api.entities.menuitem.data.MenuItemResponseDTO;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -35,7 +33,13 @@ public class MenuItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @DecimalMin(value = "0.0", inclusive = false, message = "[Menu Item]: Price cannot be equal or lower than zero")
+    @DecimalMax(value = "250.0", inclusive = true, message = "[Menu Item]: Price cannot be grater than 250.00")
     private BigDecimal price;
+
+    @NotNull(message = "[Menu Item]: Name cannot be null")
+    @NotBlank(message = "[Menu Item]: Name cannot be empty")
+    @Size(min = 5, max = 35, message = "[Menu Item]: Menu Item name must contain at least 5 and a max of 35 characters")
     private String name;
 
     @ManyToMany
@@ -44,35 +48,9 @@ public class MenuItem {
         joinColumns = @JoinColumn(name = "menu_item_id"),
         inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
+    @NotEmpty(message = "[Menu Item]: Ingredients list cannot be empty")
+    @NotNull(message = "[Menu Item]: Ingredients list cannot be null")
     private List<Ingredient> ingredients;
-
-    public void setId(Long id) throws Exception {
-        if (id.toString().isEmpty()) {
-            throw new IllegalArgumentException("[Menu Item]: Id cannot be null or empty");
-        }
-        this.id = id;
-    }
-
-    public void setPrice(BigDecimal price) throws Exception {
-        if (price.signum() == -1) {
-            throw new IllegalArgumentException("[Menu Item]: Price cannot be lower than zero");
-        }
-        this.price = price;
-    }
-
-    public void setName(String name) throws Exception {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Menu Item]: Name cannot be null or empty");
-        }
-        this.name = name;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients) throws Exception {
-        if (ingredients == null || ingredients.size() == 0) {
-            throw new IllegalArgumentException("[Menu Item]: Ingredients list cannot be null or empty");
-        }
-        this.ingredients = ingredients;
-    }
 
     public MenuItem(CreateMenuItemRequestDTO data) throws Exception {
         this.setName(data.name());
