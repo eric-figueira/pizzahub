@@ -3,6 +3,7 @@ package pizzahub.api.presentation.controllers;
 import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -16,12 +17,15 @@ import pizzahub.api.entities.ingredient.data.IngredientParameters;
 import pizzahub.api.mappers.IngredientMapper;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.IngredientRepository;
+import pizzahub.api.repositories.MenuItemRepository;
 
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController {
     @Autowired
     private IngredientRepository repository;
+    @Autowired
+    private MenuItemRepository menuItemRepository;
 
     @GetMapping
     public ResponseEntity<Response> fetchIngredients(
@@ -74,7 +78,7 @@ public class IngredientController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> create(@RequestBody IngredientParameters body) {
+    public ResponseEntity<Response> create(@RequestBody @Valid IngredientParameters body) {
         Ingredient ingredient = new Ingredient();
         ingredient.setName(body.name());
 
@@ -90,8 +94,16 @@ public class IngredientController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Response> delete(@PathVariable("id") Long ingredientId) {
-        Ingredient exists = this.repository.findById(ingredientId)
+        Ingredient ingredient = this.repository.findById(ingredientId)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID in order to remove it"));
+
+        this.menuItemRepository.findAll()
+            .stream()
+            .filter(item -> item.getIngredients().contains(ingredient))
+            .forEach(item -> {
+                item.getIngredients().remove(ingredient);
+                menuItemRepository.save(item);
+            });
 
         this.repository.deleteById(ingredientId);
 
