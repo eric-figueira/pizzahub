@@ -1,8 +1,11 @@
 package pizzahub.api.entities.order;
 
 public enum OrderStatus {
-    NOT_INITIATED,
-    IN_PROGRESS,
+    PENDING,
+    PREPARING,
     READY,
+    OUT_FOR_DELIVERY,
+    COMPLETED,
+    ON_HOLD,
     CANCELLED
 }

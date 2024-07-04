@@ -3,6 +3,10 @@ package pizzahub.api.entities.order;
 public enum PaymentMethod {
     CREDIT_CARD,
     DEBIT_CARD,
-    QR_CODE,
-    PIX
+    CASH,
+    MEAL_VOUCHERS,
+    CHECK,
+    PIX,
+    DIGITAL_WALLET,
+    BANK_TRANSFER
 }

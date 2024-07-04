@@ -1,20 +1,29 @@
 package pizzahub.api.entities.order.data;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalTime;
-import java.util.Date;
 
+import jakarta.validation.constraints.NotNull;
 import pizzahub.api.entities.order.OrderStatus;
 import pizzahub.api.entities.order.PaymentMethod;
-import pizzahub.api.entities.user.customer.Customer;
 
-public record OrderResponseDTO(
-    Long id,
+public record UpdateOrderParameters(
+    @NotNull
     Short number,
-    Customer customer,
-    Date orderDate,
-    LocalTime orderTime,
+
+    @NotNull
+    Long customerId,
+
+    @NotNull
+    BigDecimal cost,
+
+    @NotNull
     BigDecimal shippingTax,
+
+    @NotNull
     PaymentMethod paymentMethod,
+
+    @NotNull
     OrderStatus orderStatus
-) { }
+) {}

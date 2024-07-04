@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 
 public interface PizzeriaRepository extends JpaRepository <Pizzeria, Long> {
-    Optional<Pizzeria> findByCode (Short code);
+    Optional<Pizzeria> findByCode(Short code);
 }
