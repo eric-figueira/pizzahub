@@ -18,6 +18,7 @@ import pizzahub.api.entities.menuitem.data.MenuItemResponse;
 import pizzahub.api.entities.menuitem.data.UpdateMenuItemParameters;
 import pizzahub.api.entities.menuitem.data.UpdateMenuItemPartialParameters;
 
+import pizzahub.api.mappers.MenuItemMapper;
 import pizzahub.api.repositories.IngredientRepository;
 import pizzahub.api.repositories.MenuItemRepository;
 
@@ -71,7 +72,7 @@ public class MenuItemController {
             .body(new Response(
                 "Successfully fetched all menu items",
                 paginated.stream()
-                    .map(MenuItem::convertToResponseDTO)
+                    .map(MenuItemMapper::modelToResponse)
                     .collect(Collectors.toList())
             ));
     }
@@ -81,11 +82,12 @@ public class MenuItemController {
         MenuItem menuItem = this.repository.findById(menuItemId)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch menu item with specified ID"));
 
-        MenuItemResponse response = menuItem.convertToResponseDTO();
-
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(new Response("Successfully fetched menu item with specified id", response));
+            .body(new Response(
+                "Successfully fetched menu item with specified id",
+                MenuItemMapper.modelToResponse(menuItem)
+            ));
     }
 
     @PostMapping
@@ -103,13 +105,13 @@ public class MenuItemController {
 
         newMenuItem.setIngredients(ingredients);
 
-        MenuItem savedMenuItem = this.repository.save(newMenuItem);
+        MenuItem created = this.repository.save(newMenuItem);
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully created new menu item",
-                savedMenuItem.convertToResponseDTO()
+                MenuItemMapper.modelToResponse(created)
             ));
     }
 
@@ -147,13 +149,13 @@ public class MenuItemController {
             current.setIngredients(ingredients);
         }
 
-        MenuItem updatedMenuItem = this.repository.save(current);
+        MenuItem updated = this.repository.save(current);
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated Menu Item",
-                updatedMenuItem.convertToResponseDTO()
+                MenuItemMapper.modelToResponse(updated)
             ));
     }
 
@@ -183,13 +185,13 @@ public class MenuItemController {
             );
         }
 
-        MenuItem updatedMenuItem = this.repository.save(current);
+        MenuItem updated = this.repository.save(current);
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated Menu Item",
-                updatedMenuItem.convertToResponseDTO()
+                MenuItemMapper.modelToResponse(updated)
             ));
     }
 }

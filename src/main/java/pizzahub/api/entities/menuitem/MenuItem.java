@@ -70,13 +70,4 @@ public class MenuItem {
         }
         this.ingredients = ingredients;
     }
-
-    public MenuItemResponse convertToResponseDTO() {
-        return new MenuItemResponse(
-            this.getId(),
-            this.getPrice(),
-            this.getName(),
-            this.getIngredients().stream().collect(Collectors.toMap(Ingredient::getId, Ingredient::getName))
-        );
-    }
 }
