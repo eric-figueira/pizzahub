@@ -2,21 +2,18 @@ package pizzahub.api.presentation.controllers;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.MissingResourceException;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import pizzahub.api.entities.ingredient.Ingredient;
-import pizzahub.api.entities.ingredient.data.IngredientResponseDTO;
+import pizzahub.api.entities.ingredient.data.IngredientParameters;
+import pizzahub.api.mappers.IngredientMapper;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.IngredientRepository;
 
@@ -30,87 +27,101 @@ public class IngredientController {
     public ResponseEntity<Response> fetchIngredients(
             @RequestParam(value = "page", defaultValue = "1") short page,
             @RequestParam(value = "perPage", defaultValue = "30") short perPage,
-            @RequestParam(value = "orderByCount", defaultValue = "asc") String order) {
+            @RequestParam(value = "orderByName", defaultValue = "") String order) {
         List<Ingredient> all = this.repository.findAll();
 
         // pagination
         short start = (short) ((page - 1) * perPage);
-        short end = 1;
 
         double numberOfGroups = (double) all.size() / perPage;
         short lastGroupNumber = (short) Math.ceil(numberOfGroups);
 
-        if (page == lastGroupNumber) {
-            // pagination refers to last page
-            end = (short) all.size();
-        } else {
-            end = (short) (page * perPage);
-        }
+        short end = page == lastGroupNumber ? (short) all.size() : (short) (page * perPage);
 
-        if (start >= all.size() || end > all.size()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new Response("Invalid pagination parameters", null));
+        if (start >= all.size()) {
+            throw new IllegalArgumentException(
+                "The pagination parameters are invalid. Please ensure that 'page' is smaller than the total data size"
+            );
         }
 
         List<Ingredient> paginated = all.subList(start, end);
 
-        switch (order) {
-            case "desc":
-                paginated.sort(Comparator.comparingInt(item -> ((Ingredient) item).getMenuItems().size()).reversed());
-                break;
-
-            default:
-                paginated.sort(Comparator.comparingInt(item -> ((Ingredient) item).getMenuItems().size()));
-                break;
-        }
+        // ordination
+        if (order.equalsIgnoreCase("desc"))
+            paginated.sort(Comparator.comparing(Ingredient::getName).reversed());
+        else
+            paginated.sort(Comparator.comparing(Ingredient::getName));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response(
                         "Successfully fetched all ingredients",
-                        paginated.stream()
-                                .map(ingredient -> ingredient.convertToResponseDTO())
-                                .collect(Collectors.toList())));
+                        paginated
+                ));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response> fetchIngredientById(@PathVariable("id") Long ingredientId) {
-        Optional<Ingredient> optionalIngredient = this.repository.findById(ingredientId);
+    public ResponseEntity<Response> fetchById(@PathVariable("id") Long ingredientId) {
+        Ingredient ingredient = this.repository.findById(ingredientId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID"));
 
-        if (optionalIngredient.isPresent()) {
-            Ingredient menuItem = optionalIngredient.get();
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully fetched ingredient with specified id",
+                IngredientMapper.modelToResponse(ingredient)
+            ));
+    }
 
-            IngredientResponseDTO response = menuItem.convertToResponseDTO();
+    @PostMapping
+    public ResponseEntity<Response> create(@RequestBody IngredientParameters body) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName(body.name());
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new Response(
-                            "Successfully fetched ingredient with specified id",
-                            response));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new Response(
-                            "Could not find ingredient with specified id",
-                            null));
-        }
+        Ingredient created = this.repository.save(ingredient);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully created new ingredient",
+                IngredientMapper.modelToResponse(created)
+            ));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> deleteIngredient(@PathVariable("id") Long ingredientId) {
-        Optional<Ingredient> optionalIngredient = this.repository.findById(ingredientId);
+    public ResponseEntity<Response> delete(@PathVariable("id") Long ingredientId) {
+        Ingredient exists = this.repository.findById(ingredientId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID in order to remove it"));
 
-        if (optionalIngredient.isPresent()) {
-            this.repository.deleteById(ingredientId);
+        this.repository.deleteById(ingredientId);
 
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new Response("Successfully deleted ingredient with specified id", null));
-        } else {
-            return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new Response("Ingredient with specified id does not exist", null));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response("Successfully deleted ingredient with specified id", null));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Response> update(
+        @PathVariable("id") Long ingredientId,
+        @RequestBody @Valid IngredientParameters body
+    ) {
+        Ingredient current = this.repository.findById(ingredientId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID in order to update it"));
+
+        if (body.name() != null) current.setName(body.name());
+        else {
+            throw new MissingResourceException(
+                "All ingredient fields must be informed", "Ingredient", ""
+            );
         }
+
+        Ingredient updated = this.repository.save(current);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated ingredient",
+                IngredientMapper.modelToResponse(updated)
+            ));
     }
 }

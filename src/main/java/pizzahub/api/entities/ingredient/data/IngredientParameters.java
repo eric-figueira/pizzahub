@@ -1,14 +1,10 @@
 package pizzahub.api.entities.ingredient.data;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record CreateIngredientRequestDTO(
-    @NotBlank
-    String name,
-
+public record IngredientParameters(
     @NotNull
-    List<Long> menuItemsIds
+    @NotBlank
+    String name
 ) {}

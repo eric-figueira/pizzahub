@@ -14,8 +14,6 @@ import jakarta.validation.Valid;
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.menuitem.data.CreateMenuItemParameters;
-import pizzahub.api.entities.menuitem.data.MenuItemResponse;
-import pizzahub.api.entities.menuitem.data.UpdateMenuItemParameters;
 import pizzahub.api.entities.menuitem.data.UpdateMenuItemPartialParameters;
 
 import pizzahub.api.mappers.MenuItemMapper;
@@ -191,6 +189,50 @@ public class MenuItemController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated Menu Item",
+                MenuItemMapper.modelToResponse(updated)
+            ));
+    }
+
+    @PatchMapping("{menuItemId}/{ingredientId}")
+    public ResponseEntity<Response> addIngredient(
+        @PathVariable("menuItemId") Long id,
+        @PathVariable("ingredientId") Long ingredientId
+    ) {
+        MenuItem menuItem = this.repository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to add the ingredient"));
+
+        Ingredient ingredient = this.ingredientRepository.findById(ingredientId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve ingredient with specified id in order to add it to the menu item"));
+
+        menuItem.getIngredients().add(ingredient);
+        MenuItem updated = this.repository.save(menuItem);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully add ingredient to menu item",
+                MenuItemMapper.modelToResponse(updated)
+            ));
+    }
+
+    @DeleteMapping("{menuItemId}/{ingredientId}")
+    public ResponseEntity<Response> removeIngredient(
+        @PathVariable("menuItemId") Long id,
+        @PathVariable("ingredientId") Long ingredientId
+    ) {
+        MenuItem menuItem = this.repository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove the ingredient"));
+
+        Ingredient ingredient = this.ingredientRepository.findById(ingredientId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve ingredient with specified id in order to remove it from the menu item"));
+
+        menuItem.getIngredients().remove(ingredient);
+        MenuItem updated = this.repository.save(menuItem);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully removed ingredient from menu item",
                 MenuItemMapper.modelToResponse(updated)
             ));
     }

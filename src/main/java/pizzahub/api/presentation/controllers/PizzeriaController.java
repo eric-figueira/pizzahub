@@ -2,6 +2,7 @@ package pizzahub.api.presentation.controllers;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -194,6 +195,10 @@ public class PizzeriaController {
             if (body.complement() != null)
                 pizzeria.setComplement(body.complement());
             pizzeria.setAddressNumber(body.addressNumber());
+        } else {
+            throw new MissingResourceException(
+                "All pizzeria fields must be informed", "Pizzeria", ""
+            );
         }
 
         Pizzeria updated = this.repository.save(pizzeria);
