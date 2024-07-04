@@ -76,7 +76,7 @@ public class MenuItem {
             this.getId(),
             this.getPrice(),
             this.getName(),
-            this.getIngredients().stream().map(Ingredient::getName).collect(Collectors.toList())
+            this.getIngredients().stream().collect(Collectors.toMap(Ingredient::getId, Ingredient::getName))
         );
     }
 }
