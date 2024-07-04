@@ -133,7 +133,7 @@ public class MenuItemController {
         @RequestBody @Valid UpdateMenuItemPartialParameters body
     ) {
         MenuItem current = this.repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove it"));
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to update it"));
 
         if (body.name()  != null) current.setName(body.name());
         if (body.price() != null) current.setPrice(body.price());
@@ -165,7 +165,7 @@ public class MenuItemController {
         @RequestBody @Valid UpdateMenuItemPartialParameters body
     ) {
         MenuItem current = this.repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove it"));
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to update it"));
 
         if (body.name() != null && body.price() != null && body.ingredientsIds() != null) {
             current.setName(body.name());

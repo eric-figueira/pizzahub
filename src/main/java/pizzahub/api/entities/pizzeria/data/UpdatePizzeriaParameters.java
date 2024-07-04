@@ -2,13 +2,12 @@ package pizzahub.api.entities.pizzeria.data;
 
 import jakarta.validation.constraints.NotNull;
 
-public record CreatePizzeriaRequestDTO (
+public record UpdatePizzeriaParameters(
     @NotNull
     Short code,
 
     @NotNull
     String firstContact,
-
     String secondContact,
 
     @NotNull

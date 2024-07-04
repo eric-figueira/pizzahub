@@ -1,15 +1,12 @@
 package pizzahub.api.entities.pizzeria;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.pizzeria.data.CreatePizzeriaRequestDTO;
-import pizzahub.api.entities.pizzeria.data.PizzeriaResponseDTO;
+import pizzahub.api.entities.pizzeria.data.CreatePizzeriaParameters;
 import pizzahub.api.utils.RegexValidator;
 
 @Getter
@@ -20,7 +17,11 @@ import pizzahub.api.utils.RegexValidator;
 @Table(name = "pizzeria")
 public class Pizzeria {
     @Id
-    private short code;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    private Short code;
 
     private String firstContact;
     private String secondContact;
@@ -31,116 +32,88 @@ public class Pizzeria {
     private String city;
     private String uf;
     private String complement;
-    private Short addressNumber;
+    private Short  addressNumber;
 
-    public void setCode(short code) {
+    public void setCode(Short code) {
         if (code <= 0) {
             throw new IllegalArgumentException("[Pizzeria]: Code cannot be equal or lower than zero");
         }
         this.code = code;
     }
 
-    public void setFirstContact(String firstContact) throws Exception {
-        if (firstContact == null || firstContact.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: First contact cannot be null or empty");
+    public void setFirstContact(String firstContact) {
+        if (firstContact == null || firstContact.trim().isEmpty() || firstContact.length() < 10 || firstContact.length() > 50) {
+            throw new IllegalArgumentException("Pizzeria's first contact must be between 10 and 50 characters and cannot be null or empty.");
         }
         this.firstContact = firstContact;
     }
 
-    public void setSecondContact(String secondContact) throws Exception {
-        if (secondContact == null || secondContact.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: Second contact cannot be null or empty");
+    public void setSecondContact(String secondContact) {
+        if (secondContact != null && (secondContact.trim().isEmpty() || secondContact.length() < 10 || secondContact.length() > 50)) {
+            throw new IllegalArgumentException("Pizzeria's second contact must be between 10 and 50 characters and cannot be empty.");
         }
         this.secondContact = secondContact;
     }
 
-    public void setEmail(String email) throws Exception {
+    public void setEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: Email cannot be null or empty");
+            throw new IllegalArgumentException("Pizzeria's email must be between 10 and 50 characters and cannot be empty");
         }
         if (!RegexValidator.validateEmail(email)) {
-            throw new IllegalArgumentException("[Pizzeria]: Email does not match pattern");
+            throw new IllegalArgumentException("Pizzeria's email does not match pattern");
         }
         this.email = email;
     }
 
-    public void setCep(String cep) throws Exception {
+    public void setCep(String cep) {
         if (cep == null || cep.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: CEP cannot be null or empty");
+            throw new IllegalArgumentException("Pizzeria's CEP cannot be null or empty");
         }
         if (!RegexValidator.validateCEP(cep)) {
-            throw new IllegalArgumentException("[Pizzeria]: CEP does not match pattern");
+            throw new IllegalArgumentException("Pizzeria's CEP does not match pattern");
         }
         this.cep = cep;
     }
 
-    public void setStreetName(String streetName) throws Exception {
-        if (streetName == null || streetName.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: Street name cannot be null or empty");
+    public void setStreetName(String streetName) {
+        if (streetName == null || streetName.trim().isEmpty() || streetName.length() < 10 || streetName.length() > 50) {
+            throw new IllegalArgumentException("Pizzeria's street name must be between 10 and 50 characters and cannot be empty");
         }
         this.streetName = streetName;
     }
 
-    public void setNeighborhood(String neighborhood) throws Exception {
-        if (neighborhood == null || neighborhood.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: Neighborhood cannot be null or empty");
+    public void setNeighborhood(String neighborhood) {
+        if (neighborhood == null || neighborhood.trim().isEmpty() || neighborhood.length() < 5 || neighborhood.length() > 50) {
+            throw new IllegalArgumentException("Pizzeria's neighborhood must be between 5 and 50 characters and cannot be empty");
         }
         this.neighborhood = neighborhood;
     }
 
-    public void setCity(String city) throws Exception {
-        if (city == null || city.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: City cannot be null or empty");
+    public void setCity(String city) {
+        if (city == null || city.trim().isEmpty() || city.length() < 5 || city.length() > 50) {
+            throw new IllegalArgumentException("Pizzeria's city must be between 5 and 50 characters and cannot be empty");
         }
         this.city = city;
     }
 
-    public void setUf(String uf) throws Exception {
-        if (uf == null || uf.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: UF cannot be null or empty");
+    public void setUf(String uf) {
+        if (uf == null || uf.trim().isEmpty() || uf.length() != 2) {
+            throw new IllegalArgumentException("Pizzeria's UF must be exactly 2 characters long and cannot be empty");
         }
         this.uf = uf;
     }
 
-    public void setComplement(String complement) throws Exception {
-        if (complement == null || complement.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Pizzeria]: Complement cannot be null or empty");
+    public void setComplement(String complement) {
+        if (complement == null || complement.trim().isEmpty() || complement.length() < 10 || complement.length() > 50) {
+            throw new IllegalArgumentException("Pizzeria's complement must be between 10 and 50 characters and cannot be empty");
         }
         this.complement = complement;
     }
 
     public void setAddressNumber(Short addressNumber) {
-        if (addressNumber == null || addressNumber == 0) {
-            throw new IllegalArgumentException("[Pizzeria]: Telephone cannot be null or empty");
+        if (addressNumber == null || addressNumber <= 0) {
+            throw new IllegalArgumentException("Pizzeria's address number must be greater than zero and less than or equal to 250");
         }
         this.addressNumber = addressNumber;
-    }
-
-    public Pizzeria(CreatePizzeriaRequestDTO pizzeria) throws Exception {
-        setAddressNumber(pizzeria.addressNumber());
-        setCep(pizzeria.cep());
-        setCode(pizzeria.code());
-        setEmail(pizzeria.email());
-        setFirstContact(pizzeria.firstContact());
-        if (pizzeria.complement() != null)
-            setComplement(pizzeria.complement());
-        if (pizzeria.secondContact() != null)
-            setSecondContact(pizzeria.secondContact());
-    }
-
-    public PizzeriaResponseDTO convertToResponseDTO() {
-        return new PizzeriaResponseDTO(
-            this.getCode(),
-            this.getFirstContact(),
-            this.getSecondContact(),
-            this.getEmail(),
-            this.getCep(),
-            this.getStreetName(),
-            this.getNeighborhood(),
-            this.getCity(),
-            this.getUf(),
-            this.getComplement(),
-            this.getAddressNumber()
-        );
     }
 }
