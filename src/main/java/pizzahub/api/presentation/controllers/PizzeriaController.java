@@ -210,4 +210,8 @@ public class PizzeriaController {
                 PizzeriaMapper.modelToResponse(updated)
             ));
     }
+
+    // listar todos os pedidos associados a essa pizzaria
+    // adicionar worker
+    // remover worker
 }

@@ -193,7 +193,7 @@ public class MenuItemController {
             ));
     }
 
-    @PatchMapping("{menuItemId}/{ingredientId}")
+    @PatchMapping("{menuItemId}/ingredients/{ingredientId}")
     public ResponseEntity<Response> addIngredient(
         @PathVariable("menuItemId") Long id,
         @PathVariable("ingredientId") Long ingredientId
@@ -215,7 +215,7 @@ public class MenuItemController {
             ));
     }
 
-    @DeleteMapping("{menuItemId}/{ingredientId}")
+    @DeleteMapping("{menuItemId}/ingredients/{ingredientId}")
     public ResponseEntity<Response> removeIngredient(
         @PathVariable("menuItemId") Long id,
         @PathVariable("ingredientId") Long ingredientId

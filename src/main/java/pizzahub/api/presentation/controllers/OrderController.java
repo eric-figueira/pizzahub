@@ -127,8 +127,8 @@ public class OrderController {
     public ResponseEntity<Response> create(@RequestBody @Valid CreateOrderParameters body) {
         Order order = new Order();
         order.setNumber(body.number());
-        order.setPaymentMethod(body.paymentMethod());
-        order.setShippingTax(body.shippingTax());
+        if (body.paymentMethod() != null) order.setPaymentMethod(body.paymentMethod());
+        if (body.shippingTax() != null) order.setShippingTax(body.shippingTax());
         order.setCost(body.cost());
 
         Customer customer = this.customerRepository
@@ -172,6 +172,33 @@ public class OrderController {
         Order current = this.repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
 
-        // to implement
+        Order order = new Order();
+        order.setNumber(body.number());
+        order.setPaymentMethod(body.paymentMethod());
+        order.setShippingTax(body.shippingTax());
+        order.setCost(body.cost());
+
+        Customer customer = this.customerRepository
+            .findById(body.customerId())
+            .orElseThrow(() -> new EntityNotFoundException(
+                "Failed to retrieve customer informed by ID"
+            ));
+        order.setCustomer(customer);
+        order.setOrderStatus(body.orderStatus());
+
+        Order updated = this.repository.save(order);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated  order",
+                OrderMapper.modelToResponse(updated)
+            ));
     }
+
+    // patch
+    // adicionar item do menu
+    // remover item do menu
+    // status atual do pedido
+    // atualizar status
 }
