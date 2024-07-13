@@ -6,8 +6,12 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.pizzeria.data.CreatePizzeriaParameters;
+import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.utils.RegexValidator;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -33,6 +37,10 @@ public class Pizzeria {
     private String uf;
     private String complement;
     private Short  addressNumber;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "worker_id")
+    private List<Worker> workers;
 
     public void setCode(Short code) {
         if (code <= 0) {
@@ -115,5 +123,12 @@ public class Pizzeria {
             throw new IllegalArgumentException("Pizzeria's address number must be greater than zero and less than or equal to 250");
         }
         this.addressNumber = addressNumber;
+    }
+
+    public void setWorkersList(List<Worker> workers) {
+        if (workers == null || workers.isEmpty()) {
+            throw new IllegalArgumentException("Pizzeria's workers list cannot be null or empty.");
+        }
+        this.workers = workers;
     }
 }

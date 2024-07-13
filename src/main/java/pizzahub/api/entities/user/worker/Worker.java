@@ -17,6 +17,7 @@ import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.Role;
 import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
 import pizzahub.api.entities.user.worker.data.WorkerResponseDTO;
+import pizzahub.api.utils.RegexValidator;
 
 @Getter
 @NoArgsConstructor
@@ -37,31 +38,27 @@ public class Worker {
     private Role role;
 
     @OneToOne
-    @JoinColumn(name = "code_pizzeria")
+    @JoinColumn(name = "pizzeria_code")
     private Pizzeria pizzeria;
 
-    public void setId(Long id) throws Exception {
-        if (id == 0) {
-            throw new IllegalArgumentException("[Worker]: Id cannot be null or empty");
-        }
-        this.id = id;
-    }
-
-    public void setFullname(String fullname) throws Exception {
-        if (fullname == null || fullname.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Worker]: Fullname cannot be null or empty");
+    public void setFullname(String fullname) {
+        if (fullname == null || fullname.trim().isEmpty() || fullname.length() < 5 || fullname.length() > 35) {
+            throw new IllegalArgumentException("Worker's name must be between 5 and 50 characters and cannot be null or empty.");
         }
         this.fullname = fullname;
     }
 
-    public void setEmail(String email) throws Exception {
+    public void setEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("[Worker]: Email cannot be null or empty");
+            throw new IllegalArgumentException("Worker's email must be between 10 and 50 characters and cannot be empty");
+        }
+        if (!RegexValidator.validateEmail(email)) {
+            throw new IllegalArgumentException("Worker's email does not match pattern");
         }
         this.email = email;
     }
 
-    public void setPassword(String password) throws Exception {
+    public void setPassword(String password) {
         if (password == null || password.trim().isEmpty()) {
             throw new IllegalArgumentException("[Worker]: Password cannot be null or empty");
         }
@@ -77,7 +74,7 @@ public class Worker {
 
     public void setPizzeria(Pizzeria pizzeria) {
         if (pizzeria == null) {
-            throw new IllegalArgumentException("[Worker]: Pizzeria cannot be null");
+            throw new IllegalArgumentException("Worker's cannot be null");
         }
         this.pizzeria = pizzeria;
     }

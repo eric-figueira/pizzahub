@@ -46,22 +46,16 @@ public class WorkerController {
 
         // pagination
         short start = (short) ((page - 1) * perPage);
-        short end = 1;
 
         double numberOfGroups = (double) all.size() / perPage;
         short lastGroupNumber = (short) Math.ceil(numberOfGroups);
 
-        if (page == lastGroupNumber) {
-            // pagination refers to last page
-            end = (short) all.size();
-        } else {
-            end = (short) (page * perPage);
-        }
+        short end = page == lastGroupNumber ? (short) all.size() : (short) (page * perPage);
 
-        if (start >= all.size() || end > all.size()) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new Response("Invalid pagination parameters", null));
+        if (start >= all.size()) {
+            throw new IllegalArgumentException(
+                "The pagination parameters are invalid. Please ensure that 'page' is smaller than the total data size"
+            );
         }
 
         List<Worker> paginated = all.subList(start, end);
