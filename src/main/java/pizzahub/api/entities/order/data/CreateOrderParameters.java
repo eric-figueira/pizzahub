@@ -1,6 +1,7 @@
 package pizzahub.api.entities.order.data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import pizzahub.api.entities.order.PaymentMethod;
@@ -16,5 +17,8 @@ public record CreateOrderParameters(
     BigDecimal cost,
 
     BigDecimal shippingTax,
-    PaymentMethod paymentMethod
+    PaymentMethod paymentMethod,
+
+    @NotNull
+    List<Long> menuItemsIds
 ) {}

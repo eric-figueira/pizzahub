@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.order.data.UpdateOrderParameters;
+import pizzahub.api.entities.order.data.UpdateOrderPartialParameters;
+import pizzahub.api.mappers.MenuItemMapper;
 import pizzahub.api.mappers.OrderMapper;
 import pizzahub.api.repositories.CustomerRepository;
+import pizzahub.api.repositories.MenuItemRepository;
 import pizzahub.api.repositories.OrderRepository;
 
 import pizzahub.api.entities.order.Order;
@@ -37,6 +41,9 @@ public class OrderController {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private MenuItemRepository menuItemRepository;
 
     @GetMapping
     public ResponseEntity<Response> fetchOrders(
@@ -172,33 +179,133 @@ public class OrderController {
         Order current = this.repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
 
-        Order order = new Order();
-        order.setNumber(body.number());
-        order.setPaymentMethod(body.paymentMethod());
-        order.setShippingTax(body.shippingTax());
-        order.setCost(body.cost());
+        current.setNumber(body.number());
+        current.setPaymentMethod(body.paymentMethod());
+        current.setShippingTax(body.shippingTax());
+        current.setCost(body.cost());
 
         Customer customer = this.customerRepository
             .findById(body.customerId())
             .orElseThrow(() -> new EntityNotFoundException(
                 "Failed to retrieve customer informed by ID"
             ));
-        order.setCustomer(customer);
-        order.setOrderStatus(body.orderStatus());
+        current.setCustomer(customer);
+        current.setOrderStatus(body.orderStatus());
 
+        Order updated = this.repository.save(current);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated order",
+                OrderMapper.modelToResponse(updated)
+            ));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Response> updatePartial(
+        @PathVariable("id") Long id,
+        @RequestBody @Valid UpdateOrderPartialParameters body
+    ) {
+        Order current = this.repository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
+
+        if (body.number() != null) current.setNumber(body.number());
+        if (body.paymentMethod() != null) current.setPaymentMethod(body.paymentMethod());
+        if (body.shippingTax() != null) current.setShippingTax(body.shippingTax());
+        if (body.cost() != null) current.setCost(body.cost());
+
+        if (body.customerId() != null) {
+            Customer customer = this.customerRepository
+                .findById(body.customerId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Failed to retrieve customer informed by ID"
+                ));
+            current.setCustomer(customer);
+        }
+        if (body.orderStatus() != null) current.setOrderStatus(body.orderStatus());
+
+        Order updated = this.repository.save(current);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated order",
+                OrderMapper.modelToResponse(updated)
+            ));
+    }
+
+    @PostMapping("{orderNumber}/menuitem/{menuItemId}")
+    public ResponseEntity<Response> addMenuItem(
+        @PathVariable("orderNumber") Short orderNumber,
+        @PathVariable("menuItemId") Long menuItemId
+    ) {
+        Order order = this.repository.findByOrderNumber(orderNumber)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve order with specified number in order to add the menu item"));
+
+        MenuItem menuItem = this.menuItemRepository.findById(menuItemId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to add it to the order"));
+
+        order.getMenuItems().add(menuItem);
         Order updated = this.repository.save(order);
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
-                "Successfully updated  order",
+                "Successfully add menu item to order",
                 OrderMapper.modelToResponse(updated)
             ));
     }
 
-    // patch
-    // adicionar item do menu
-    // remover item do menu
-    // status atual do pedido
-    // atualizar status
+    @DeleteMapping("{orderNumber}/menuitem/{menuItemId}")
+    public ResponseEntity<Response> removeMenuItem(
+        @PathVariable("orderNumber") Short orderNumber,
+        @PathVariable("menuItemId") Long menuItemId
+    ) {
+        Order order = this.repository.findByOrderNumber(orderNumber)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve order with specified number in order to remove the menu item"));
+
+        MenuItem menuItem = this.menuItemRepository.findById(menuItemId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove it from the order"));
+
+        order.getMenuItems().remove(menuItem);
+        Order updated = this.repository.save(order);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully removed menu item from menu item",
+                OrderMapper.modelToResponse(updated)
+            ));
+    }
+
+    @GetMapping("{orderNumber}/status")
+    public ResponseEntity<Response> fetchOrderStatus(@PathVariable("orderNumber") Short orderNumber) {
+        Order order = this.repository.findByOrderNumber(orderNumber)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully fetched order status",
+                order.getOrderStatus()));
+    }
+
+    @PatchMapping("{orderNumber}/status/{status}")
+    public ResponseEntity<Response> changeOrderStatus(
+        @PathVariable("orderNumber") Short orderNumber,
+        @PathVariable("status") String status
+    ) {
+        Order order = this.repository.findByOrderNumber(orderNumber)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number in order to change its status"));
+
+        OrderStatus newStatus = OrderStatus.valueOf(status.toUpperCase());
+        order.setOrderStatus(newStatus);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully fetched order status",
+                null));
+    }
 }

@@ -212,6 +212,8 @@ public class PizzeriaController {
     }
 
     // listar todos os pedidos associados a essa pizzaria
+    // listar todos os workers dessa pizzaria
     // adicionar worker
+    // update worker
     // remover worker
 }

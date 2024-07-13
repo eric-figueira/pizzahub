@@ -5,6 +5,7 @@ import pizzahub.api.entities.order.OrderStatus;
 import pizzahub.api.entities.order.PaymentMethod;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record UpdateOrderPartialParameters(
     Short number,
@@ -12,5 +13,6 @@ public record UpdateOrderPartialParameters(
     BigDecimal cost,
     BigDecimal shippingTax,
     PaymentMethod paymentMethod,
-    OrderStatus orderStatus
+    OrderStatus orderStatus,
+    List<Long> ingredientsIds
 ) {}

@@ -3,6 +3,7 @@ package pizzahub.api.entities.order.data;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalTime;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import pizzahub.api.entities.order.OrderStatus;
@@ -25,5 +26,8 @@ public record UpdateOrderParameters(
     PaymentMethod paymentMethod,
 
     @NotNull
-    OrderStatus orderStatus
+    OrderStatus orderStatus,
+
+    @NotNull
+    List<Long> menuItemsIds
 ) {}

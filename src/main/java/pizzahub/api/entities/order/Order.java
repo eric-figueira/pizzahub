@@ -3,13 +3,18 @@ package pizzahub.api.entities.order;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 // import java.util.UUID;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pizzahub.api.entities.ingredient.Ingredient;
+import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.order.data.CreateOrderParameters;
 import pizzahub.api.entities.order.data.OrderResponse;
 import pizzahub.api.entities.user.customer.Customer;
@@ -44,6 +49,14 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    @ManyToMany
+    @JoinTable(
+        name = "order_menu_items",
+        joinColumns = @JoinColumn(name = "order_id"),
+        inverseJoinColumns = @JoinColumn(name = "menu_item_id")
+    )
+    private List<MenuItem> menuItems;
 
     public void setNumber(Short number) {
         if (number == null || number <= 0) {
@@ -99,5 +112,12 @@ public class Order {
             throw new IllegalArgumentException("Order's status cannot be null");
         }
         this.orderStatus = orderStatus;
+    }
+
+    public void setMenuItems(List<MenuItem> menuitems) {
+        if (menuitems == null || menuitems.isEmpty()) {
+            throw new IllegalArgumentException("Order's menu items list cannot be null or empty.");
+        }
+        this.menuItems = menuitems;
     }
 }
