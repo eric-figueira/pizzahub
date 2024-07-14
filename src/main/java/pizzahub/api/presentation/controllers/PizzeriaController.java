@@ -1,9 +1,6 @@
 package pizzahub.api.presentation.controllers;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.MissingResourceException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -18,9 +15,11 @@ import pizzahub.api.entities.pizzeria.data.CreatePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaPartialParameters;
 import pizzahub.api.entities.user.worker.Worker;
+import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
 import pizzahub.api.infrastructure.cep.Address;
 import pizzahub.api.infrastructure.cep.ViaCepClient;
 import pizzahub.api.mappers.PizzeriaMapper;
+import pizzahub.api.mappers.WorkerMapper;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.PizzeriaRepository;
 import pizzahub.api.repositories.WorkerRepository;
@@ -249,8 +248,81 @@ public class PizzeriaController {
             ));
     }
 
-    // listar todos os workers dessa pizzaria
-    // adicionar worker
-    // update worker
-    // remover worker
+    @GetMapping("/{code}/workers")
+    public ResponseEntity<Response> fetchWorkers(@PathVariable("code") Short code) {
+        Pizzeria pizzeria = this.repository.findByCode(code)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully fetched workers from the pizzeria with specified id",
+                pizzeria.getWorkers().stream().map(WorkerMapper::modelToResponse)
+            ));
+    }
+
+    @GetMapping("/{code}/workers/{workerId}")
+    public ResponseEntity<Response> fetchWorkerById(
+        @PathVariable("code") Short code,
+        @PathVariable("workerId") Long workerId
+    ) {
+        Pizzeria pizzeria = this.repository.findByCode(code)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully fetched worker with specified id in pizzeria",
+                pizzeria.getWorkers().stream().filter(worker -> Objects.equals(worker.getId(), workerId))
+            ));
+    }
+
+    @PostMapping("/{code}/workers")
+    public ResponseEntity<Response> addWorker(
+        @PathVariable("code") Short code,
+        @RequestBody @Valid CreateWorkerParameters worker
+    ) {
+        Pizzeria pizzeria = this.repository.findByCode(code)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
+
+        this.workerRepository.save(WorkerMapper.createParametersToModel(worker));
+
+        pizzeria.getWorkers().add(WorkerMapper.createParametersToModel(worker));
+
+        this.repository.save(pizzeria);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully added worker with specified id to pizzeria",
+                null
+            ));
+    }
+
+    @DeleteMapping("/{code}/workers/{workerId}")
+    public ResponseEntity<Response> removeWorker(
+        @PathVariable("code") Short code,
+        @PathVariable("code") Long workerId
+    ) {
+        Pizzeria pizzeria = this.repository.findByCode(code)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
+
+        Worker worker = this.workerRepository.findById(workerId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
+
+        if (pizzeria.getWorkers().contains(worker)) {
+            pizzeria.getWorkers().remove(worker);
+        } else {
+            throw new NoSuchElementException("Worker does not exist in pizzeria informed");
+        }
+
+        this.repository.save(pizzeria);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully removed worker with specified id from pizzeria",
+                null
+            ));
+    }
 }
