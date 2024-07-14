@@ -12,5 +12,6 @@ public record PizzeriaResponse(
     String city,
     String uf,
     String complement,
-    Short addressNumber
+    Short addressNumber,
+    Integer numberOfWorkers
 ) {}

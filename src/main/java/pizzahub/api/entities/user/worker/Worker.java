@@ -1,14 +1,6 @@
 package pizzahub.api.entities.user.worker;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -37,7 +29,7 @@ public class Worker {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "pizzeria_code")
     private Pizzeria pizzeria;
 

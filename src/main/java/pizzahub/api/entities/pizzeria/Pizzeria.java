@@ -38,8 +38,7 @@ public class Pizzeria {
     private String complement;
     private Short  addressNumber;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "worker_id")
+    @OneToMany(mappedBy = "pizzeria")
     private List<Worker> workers;
 
     public void setCode(Short code) {

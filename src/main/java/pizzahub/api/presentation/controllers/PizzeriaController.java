@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +17,22 @@ import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.pizzeria.data.CreatePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaPartialParameters;
+import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.infrastructure.cep.Address;
 import pizzahub.api.infrastructure.cep.ViaCepClient;
 import pizzahub.api.mappers.PizzeriaMapper;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.PizzeriaRepository;
+import pizzahub.api.repositories.WorkerRepository;
 
 @RestController
 @RequestMapping("/pizzerias")
 public class PizzeriaController {
     @Autowired
     PizzeriaRepository repository;
+
+    @Autowired
+    WorkerRepository workerRepository;
 
     @Autowired
     private ViaCepClient cepClient;
@@ -106,6 +112,17 @@ public class PizzeriaController {
         pizzeria.setUf(address.getEstado());
         pizzeria.setStreetName(address.getLogradouro());
 
+        if (body.workersIds() != null || body.workersIds().size() != 0) {
+            List<Worker> workers = body.workersIds()
+                .stream()
+                .map(workerId -> this.workerRepository
+                    .findById(workerId)
+                    .orElseThrow(() -> new EntityNotFoundException("Failed to retrieve one of the workers informed by ID")))
+                .toList();
+
+            pizzeria.setWorkersList(workers);
+        }
+
         Pizzeria created = this.repository.save(pizzeria);
 
         return ResponseEntity
@@ -155,6 +172,17 @@ public class PizzeriaController {
         if (body.complement() != null) pizzeria.setComplement(body.complement());
         if (body.addressNumber() != null) pizzeria.setAddressNumber(body.addressNumber());
 
+        if (body.workersIds() != null || body.workersIds().size() != 0) {
+            List<Worker> workers = body.workersIds()
+                .stream()
+                .map(workerId -> this.workerRepository
+                    .findById(workerId)
+                    .orElseThrow(() -> new EntityNotFoundException("Failed to retrieve one of the workers informed by ID")))
+                .toList();
+
+            pizzeria.setWorkersList(workers);
+        }
+
         Pizzeria updated = this.repository.save(pizzeria);
 
         return ResponseEntity
@@ -174,7 +202,8 @@ public class PizzeriaController {
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code in order to update it"));
 
         if (body.code() != null && body.firstContact() != null && body.email() != null &&
-            body.cep() != null && body.addressNumber() != null) {
+            body.cep() != null && body.addressNumber() != null && body.complement() != null
+            && body.workersIds() != null && body.workersIds().size() != 0) {
 
             pizzeria.setFirstContact(body.firstContact());
             if (body.secondContact() != null)
@@ -192,9 +221,18 @@ public class PizzeriaController {
             pizzeria.setStreetName(address.getLogradouro());
             pizzeria.setCep(body.cep());
 
-            if (body.complement() != null)
-                pizzeria.setComplement(body.complement());
+            pizzeria.setComplement(body.complement());
             pizzeria.setAddressNumber(body.addressNumber());
+
+            List<Worker> workers = body.workersIds()
+                .stream()
+                .map(workerId -> this.workerRepository
+                    .findById(workerId)
+                    .orElseThrow(() -> new EntityNotFoundException("Failed to retrieve one of the workers informed by ID")))
+                .toList();
+
+            pizzeria.setWorkersList(workers);
+
         } else {
             throw new MissingResourceException(
                 "All pizzeria fields must be informed", "Pizzeria", ""

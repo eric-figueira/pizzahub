@@ -1,6 +1,9 @@
 package pizzahub.api.entities.pizzeria.data;
 
 import jakarta.validation.constraints.NotNull;
+import pizzahub.api.entities.user.worker.Worker;
+
+import java.util.List;
 
 public record CreatePizzeriaParameters(
     @NotNull
@@ -17,8 +20,11 @@ public record CreatePizzeriaParameters(
     @NotNull
     String cep,
 
+    @NotNull
     String complement,
 
     @NotNull
-    Short addressNumber
+    Short addressNumber,
+
+    List<Long> workersIds
 ) {}
