@@ -3,12 +3,9 @@ package pizzahub.api.entities.user.worker.data;
 import jakarta.validation.constraints.NotNull;
 import pizzahub.api.entities.user.Role;
 
-public record WorkerResponseDTO(
+public record UpdateWorkerParameters(
     @NotNull
-    Long id,
-
-    @NotNull
-    String fullName,
+    String fullname,
 
     @NotNull
     String email,
@@ -17,7 +14,5 @@ public record WorkerResponseDTO(
     String password,
 
     @NotNull
-    Role role,
-
-    Short pizzeria_id) {
-}
+    Role role
+) {}

@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.Role;
-import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
-import pizzahub.api.entities.user.worker.data.WorkerResponseDTO;
+import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.WorkerResponse;
 import pizzahub.api.utils.RegexValidator;
 
 @Getter
@@ -69,22 +69,5 @@ public class Worker {
             throw new IllegalArgumentException("Worker's cannot be null");
         }
         this.pizzeria = pizzeria;
-    }
-
-    public Worker(CreateWorkerRequestDTO data) throws Exception {
-        setFullname(data.fullName());
-        setEmail(data.email());
-        setPassword(data.password());
-        setRole(data.role());
-    }
-
-    public WorkerResponseDTO convertToResponseDTO() {
-        return new WorkerResponseDTO(
-            this.getId(),
-            this.getFullname(),
-            this.getEmail(),
-            this.getPassword(),
-            this.getRole(),
-            this.getPizzeria().getCode());
     }
 }

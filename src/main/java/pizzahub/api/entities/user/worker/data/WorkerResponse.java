@@ -3,7 +3,10 @@ package pizzahub.api.entities.user.worker.data;
 import jakarta.validation.constraints.NotNull;
 import pizzahub.api.entities.user.Role;
 
-public record CreateWorkerRequestDTO(
+public record WorkerResponse(
+    @NotNull
+    Long id,
+
     @NotNull
     String fullName,
 
@@ -11,10 +14,8 @@ public record CreateWorkerRequestDTO(
     String email,
 
     @NotNull
-    String password,
-
-    @NotNull
     Role role,
 
+    @NotNull
     Short pizzeriaCode
 ) {}

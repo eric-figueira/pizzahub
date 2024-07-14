@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.worker.Worker;
-import pizzahub.api.entities.user.worker.data.CreateWorkerRequestDTO;
-import pizzahub.api.entities.user.worker.data.WorkerResponseDTO;
-import pizzahub.api.entities.user.worker.data.UpdateWorkerRequestDTO;
+import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.WorkerResponse;
+import pizzahub.api.entities.user.worker.data.UpdateWorkerParameters;
 import pizzahub.api.repositories.PizzeriaRepository;
 import pizzahub.api.repositories.WorkerRepository;
 import pizzahub.api.presentation.Response;
@@ -76,7 +76,7 @@ public class WorkerController {
 
         if (workerOptional.isPresent()) {
             Worker worker = workerOptional.get();
-            WorkerResponseDTO response = worker.convertToResponseDTO();
+            WorkerResponse response = worker.convertToResponseDTO();
 
             return ResponseEntity
                 .status(HttpStatus.OK)
@@ -89,7 +89,7 @@ public class WorkerController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> createWorker(@RequestBody @Valid CreateWorkerRequestDTO body) {
+    public ResponseEntity<Response> createWorker(@RequestBody @Valid CreateWorkerParameters body) {
         try {
             Worker worker = new Worker(body);
             try {
@@ -144,7 +144,7 @@ public class WorkerController {
     }
 
     @PutMapping
-    public ResponseEntity<Response> updateWorker(@RequestBody @Valid UpdateWorkerRequestDTO body) {
+    public ResponseEntity<Response> updateWorker(@RequestBody @Valid UpdateWorkerParameters body) {
         Optional<Worker> workerOptional = this.repository.findById(body.id());
 
         if (workerOptional.isPresent()) {
