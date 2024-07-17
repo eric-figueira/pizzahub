@@ -10,14 +10,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.pizzeria.data.CreatePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaPartialParameters;
+import pizzahub.api.entities.user.Role;
 import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.UpdateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.UpdateWorkerPartialParameters;
 import pizzahub.api.infrastructure.cep.Address;
 import pizzahub.api.infrastructure.cep.ViaCepClient;
+import pizzahub.api.mappers.MenuItemMapper;
 import pizzahub.api.mappers.PizzeriaMapper;
 import pizzahub.api.mappers.WorkerMapper;
 import pizzahub.api.presentation.Response;
@@ -302,7 +307,7 @@ public class PizzeriaController {
     @DeleteMapping("/{code}/workers/{workerId}")
     public ResponseEntity<Response> removeWorker(
         @PathVariable("code") Short code,
-        @PathVariable("code") Long workerId
+        @PathVariable("workerId") Long workerId
     ) {
         Pizzeria pizzeria = this.repository.findByCode(code)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
@@ -323,6 +328,80 @@ public class PizzeriaController {
             .body(new Response(
                 "Successfully removed worker with specified id from pizzeria",
                 null
+            ));
+    }
+
+    @PutMapping("/{code}/workers/{workerId}")
+    public ResponseEntity<Response> updateWorker(
+        @PathVariable("code") Short code,
+        @PathVariable("workerId") Long workerId,
+        @RequestBody @Valid UpdateWorkerParameters body
+    ) {
+        Pizzeria pizzeria = this.repository.findByCode(code)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
+
+        Worker current = this.workerRepository.findById(workerId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
+
+        if (!pizzeria.getWorkers().contains(current)) {
+            throw new NoSuchElementException("Worker does not exist in pizzeria informed");
+        }
+
+        if (body.email() != null && body.fullname() != null && body.password() != null && body.role() != null) {
+            current.setEmail(body.email());
+            current.setFullname(body.fullname());
+            current.setPassword(body.password());
+            current.setRole(body.role());
+        } else {
+            throw new MissingResourceException(
+                "All worker fields must be informed", "Menu Item", ""
+            );
+        }
+
+        Worker updated = this.workerRepository.save(current);
+
+        // ?
+        // pizzeria.getWorkers().set(pizzeria.getWorkers().indexOf(current), updated);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated worker",
+                WorkerMapper.modelToResponse(updated)
+            ));
+    }
+
+    @PatchMapping("/{code}/workers/{workerId}")
+    public ResponseEntity<Response> updateWorker(
+        @PathVariable("code") Short code,
+        @PathVariable("workerId") Long workerId,
+        @RequestBody @Valid UpdateWorkerPartialParameters body
+    ) {
+        Pizzeria pizzeria = this.repository.findByCode(code)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
+
+        Worker current = this.workerRepository.findById(workerId)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
+
+        if (!pizzeria.getWorkers().contains(current)) {
+            throw new NoSuchElementException("Worker does not exist in pizzeria informed");
+        }
+
+        if (body.email() != null) current.setEmail(body.email());
+        if (body.fullname() != null) current.setFullname(body.fullname());
+        if (body.password() != null) current.setPassword(body.password());
+        if (body.role() != null) current.setRole(body.role());
+
+        Worker updated = this.workerRepository.save(current);
+
+        // ?
+        // pizzeria.getWorkers().set(pizzeria.getWorkers().indexOf(current), updated);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated worker",
+                WorkerMapper.modelToResponse(updated)
             ));
     }
 }

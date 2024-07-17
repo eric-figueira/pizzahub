@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.UpdateWorkerPartialParameters;
 import pizzahub.api.entities.user.worker.data.WorkerResponse;
 import pizzahub.api.entities.user.worker.data.UpdateWorkerParameters;
 import pizzahub.api.mappers.WorkerMapper;
@@ -109,88 +110,51 @@ public class WorkerController {
             .body(new Response("Successfully deleted worker with specified id", null));
     }
 
-    @PutMapping
-    public ResponseEntity<Response> updateWorker(@RequestBody @Valid UpdateWorkerParameters body) {
-        Optional<Worker> workerOptional = this.repository.findById(body.id());
+    @PutMapping("/{id}")
+    public ResponseEntity<Response> update(
+        @PathVariable("id") Long id,
+        @RequestBody @Valid UpdateWorkerParameters body
+    ) {
+        Worker current = this.repository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
 
-        if (workerOptional.isPresent()) {
-            Worker worker = workerOptional.get();
-
-            try {
-                if (body.fullname().length() != 0 || body.fullname() != null) {
-                    try {
-                        worker.setFullname(body.fullname());
-                    } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid fullname format", null));
-                    }
-                }
-
-                if (body.email().length() != 0 || body.email() != null) {
-                    try {
-                        worker.setEmail(body.email());
-                    } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid email format", null));
-                    }
-                }
-
-                if (body.password().length() != 0 || body.password() != null) {
-                    try {
-                        worker.setPassword(body.password());
-                    } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid password format", null));
-                    }
-                }
-
-                if (body.role() != null) {
-                    try {
-                        worker.setRole(body.role());
-                    } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid role", null));
-                    }
-                }
-
-                if (body.pizzeriaCode() == 0 || body.pizzeriaCode() == null) {
-                    try {
-                        Optional<Pizzeria> pizzeria = pizzeriaRepository.findByCode(body.pizzeriaCode());
-
-                        if (pizzeria.isPresent()) {
-                            worker.setPizzeria(pizzeria.get());
-                        } else {
-                            return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(new Response("Could not find pizzeria with specified id", null));
-                        }
-
-                    } catch (Exception error) {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response("Invalid pizzaria code format", null));
-                    }
-                }
-
-                Worker updatedWorker = this.repository.save(worker);
-
-                return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new Response(
-                        "Successfully updated worker",
-                        updatedWorker.convertToResponseDTO()
-                ));
-            }
-            catch (Exception error) {
-                return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new Response(
-                        "Failed to retrieve informed parameters",
-                        null
-                    ));
-            }
+        if (body.email() != null && body.fullname() != null && body.password() != null && body.role() != null) {
+            current.setEmail(body.email());
+            current.setFullname(body.fullname());
+            current.setPassword(body.password());
+            current.setRole(body.role());
         }
-        else {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new Response(
-                    "Failed to update worker",
-                    null
-                ));
-        }
+
+        Worker updated = this.repository.save(current);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated worker",
+                WorkerMapper.modelToResponse(updated)
+        ));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Response> updatePartial(
+        @PathVariable("id") Long id,
+        @RequestBody @Valid UpdateWorkerPartialParameters body
+    ) {
+        Worker current = this.repository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
+
+        if (body.email() != null) current.setEmail(body.email());
+        if (body.fullname() != null) current.setFullname(body.fullname());
+        if (body.password() != null) current.setPassword(body.password());
+        if (body.role() != null) current.setRole(body.role());
+
+        Worker updated = this.repository.save(current);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated worker",
+                WorkerMapper.modelToResponse(updated)
+            ));
     }
 }
