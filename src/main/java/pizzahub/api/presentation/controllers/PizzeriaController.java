@@ -290,7 +290,10 @@ public class PizzeriaController {
         Pizzeria pizzeria = this.repository.findByCode(code)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));
 
-        this.workerRepository.save(WorkerMapper.createParametersToModel(worker));
+        Worker created = WorkerMapper.createParametersToModel(worker);
+        created.setPizzeria(pizzeria);
+
+        this.workerRepository.save(created);
 
         pizzeria.getWorkers().add(WorkerMapper.createParametersToModel(worker));
 
@@ -320,6 +323,9 @@ public class PizzeriaController {
         } else {
             throw new NoSuchElementException("Worker does not exist in pizzeria informed");
         }
+
+        worker.setPizzeria(null);
+        this.workerRepository.save(worker);
 
         this.repository.save(pizzeria);
 
