@@ -3,19 +3,19 @@
 #### Authentication and Authorization:
 
 - Login
-- Signup
+- Sign Up
 - Password recovery
 - Roles for routing permission
   
 #### Pizzeria specific:
 
 - **Manager**:
-  - It should be able to change pizzeria data
+  - It should be able to update a pizzeria's data
   - It should be able to hire an employee
   - It should be able to fire an employee
-  - It should be able to change the position, name and email of an employee
-  - It should be able to view employees
-  - It should be able to generate a new password for an employee Note: All features of a manager only apply to the pizzeria that the manager is responsible for
+  - It should be able to change the role, name and email of an employee
+  - It should be able to view all employees
+  - It should be able to generate a new password for an employee<br />Note: All features of a manager only apply to the pizzeria that the manager is responsible for
 - **Chef**:
   - It should be able to view orders with status: In production and Not started
   - It should be able to update the status of an order to Ready
@@ -47,7 +47,7 @@ When a waiter creates an order (service 1), it will create a walk-in customer (s
     - Ingredients of a menu item
     - Payment methods
 - **Anonymous**:
-  - It should be able to view and filter menu items
+  - It should be able to view and menu items
 - **User**:
   - It should be able to change account data
   - It should be able to delete account
