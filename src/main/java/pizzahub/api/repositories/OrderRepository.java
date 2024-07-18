@@ -7,5 +7,5 @@ import pizzahub.api.entities.order.Order;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository <Order, Long> {
-    Optional<Order> findByOrderNumber(Short number);
+    Optional<Order> findByNumber(Short number);
 }

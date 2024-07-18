@@ -18,7 +18,7 @@ public class PizzeriaMapper {
             model.getUf(),
             model.getComplement(),
             model.getAddressNumber(),
-            model.getWorkers().size()
+            model.getWorkers() != null ? model.getWorkers().size() : 0
         );
     }
 }

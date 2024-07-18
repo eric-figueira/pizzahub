@@ -65,9 +65,13 @@ public class Worker {
     }
 
     public void setPizzeria(Pizzeria pizzeria) {
-        if (pizzeria == null) {
-            throw new IllegalArgumentException("Worker's cannot be null");
-        }
         this.pizzeria = pizzeria;
+    }
+
+    public Worker(String fullname, String email, String password, Role role) {
+        this.setEmail(email);
+        this.setFullname(fullname);
+        this.setPassword(password);
+        this.setRole(role);
     }
 }

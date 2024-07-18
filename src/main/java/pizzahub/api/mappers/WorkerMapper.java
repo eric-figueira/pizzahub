@@ -11,7 +11,7 @@ public class WorkerMapper {
             model.getFullname(),
             model.getEmail(),
             model.getRole(),
-            model.getPizzeria().getCode()
+            model.getPizzeria() != null ? model.getPizzeria().getCode() : null
         );
     }
 

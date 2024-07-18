@@ -120,7 +120,7 @@ public class OrderController {
 
     @GetMapping("/{number}")
     public ResponseEntity<Response> fetchByNumber(@PathVariable("number") Short orderNumber) {
-        Order order = this.repository.findByOrderNumber(orderNumber)
+        Order order = this.repository.findByNumber(orderNumber)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
 
         return ResponseEntity
@@ -240,7 +240,7 @@ public class OrderController {
         @PathVariable("orderNumber") Short orderNumber,
         @PathVariable("menuItemId") Long menuItemId
     ) {
-        Order order = this.repository.findByOrderNumber(orderNumber)
+        Order order = this.repository.findByNumber(orderNumber)
             .orElseThrow(() -> new EntityNotFoundException("Could not retrieve order with specified number in order to add the menu item"));
 
         MenuItem menuItem = this.menuItemRepository.findById(menuItemId)
@@ -262,7 +262,7 @@ public class OrderController {
         @PathVariable("orderNumber") Short orderNumber,
         @PathVariable("menuItemId") Long menuItemId
     ) {
-        Order order = this.repository.findByOrderNumber(orderNumber)
+        Order order = this.repository.findByNumber(orderNumber)
             .orElseThrow(() -> new EntityNotFoundException("Could not retrieve order with specified number in order to remove the menu item"));
 
         MenuItem menuItem = this.menuItemRepository.findById(menuItemId)
@@ -281,7 +281,7 @@ public class OrderController {
 
     @GetMapping("{orderNumber}/status")
     public ResponseEntity<Response> fetchOrderStatus(@PathVariable("orderNumber") Short orderNumber) {
-        Order order = this.repository.findByOrderNumber(orderNumber)
+        Order order = this.repository.findByNumber(orderNumber)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
 
         return ResponseEntity
@@ -296,7 +296,7 @@ public class OrderController {
         @PathVariable("orderNumber") Short orderNumber,
         @PathVariable("status") String status
     ) {
-        Order order = this.repository.findByOrderNumber(orderNumber)
+        Order order = this.repository.findByNumber(orderNumber)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number in order to change its status"));
 
         OrderStatus newStatus = OrderStatus.valueOf(status.toUpperCase());

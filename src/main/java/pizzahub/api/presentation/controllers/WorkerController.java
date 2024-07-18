@@ -8,12 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
@@ -26,9 +21,6 @@ import pizzahub.api.mappers.WorkerMapper;
 import pizzahub.api.repositories.PizzeriaRepository;
 import pizzahub.api.repositories.WorkerRepository;
 import pizzahub.api.presentation.Response;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/workers")
@@ -135,7 +127,7 @@ public class WorkerController {
         ));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Response> updatePartial(
         @PathVariable("id") Long id,
         @RequestBody @Valid UpdateWorkerPartialParameters body

@@ -109,14 +109,12 @@ public class PizzeriaController {
         String cep = body.cep();
 
         Address address = cepClient.fetchAddressByCep(cep);
-        System.out.println(address.toString());
         pizzeria.setCity(address.getCidade());
-        System.out.println(address.getBairro());
         pizzeria.setNeighborhood(address.getBairro());
         pizzeria.setUf(address.getEstado());
         pizzeria.setStreetName(address.getLogradouro());
 
-        if (body.workersIds() != null || body.workersIds().size() != 0) {
+        if (body.workersIds() != null && body.workersIds().size() != 0) {
             List<Worker> workers = body.workersIds()
                 .stream()
                 .map(workerId -> this.workerRepository
@@ -149,12 +147,12 @@ public class PizzeriaController {
             .body(new Response("Successfully deleted pizzeria with specified id", null));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{code}")
     public ResponseEntity<Response> updatePartial(
-        @PathVariable("id") Long pizzeriaId,
+        @PathVariable("code") Short code,
         @RequestBody @Valid UpdatePizzeriaPartialParameters body
     ) {
-        Pizzeria pizzeria = this.repository.findById(pizzeriaId)
+        Pizzeria pizzeria = this.repository.findByCode(code)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code in order to update it"));
 
         if (body.firstContact() != null) pizzeria.setFirstContact(body.firstContact());
@@ -176,7 +174,7 @@ public class PizzeriaController {
         if (body.complement() != null) pizzeria.setComplement(body.complement());
         if (body.addressNumber() != null) pizzeria.setAddressNumber(body.addressNumber());
 
-        if (body.workersIds() != null || body.workersIds().size() != 0) {
+        if (body.workersIds() != null && body.workersIds().size() != 0) {
             List<Worker> workers = body.workersIds()
                 .stream()
                 .map(workerId -> this.workerRepository

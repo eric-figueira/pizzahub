@@ -16,6 +16,5 @@ public record WorkerResponse(
     @NotNull
     Role role,
 
-    @NotNull
     Short pizzeriaCode
 ) {}
