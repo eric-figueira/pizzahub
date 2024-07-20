@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.ingredient.data.SaveIngredientParameters;
+import pizzahub.api.entities.ingredient.data.UpdateIngredientPartialParameters;
 import pizzahub.api.mappers.IngredientMapper;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.IngredientRepository;
@@ -58,7 +59,7 @@ public class IngredientController {
                 .status(HttpStatus.OK)
                 .body(new Response(
                         "Successfully fetched all ingredients",
-                        paginated.stream().map(this.mapper::fromEntityToResponse)
+                        this.mapper.fromEntityListToResponseList(paginated)
                 ));
     }
 
@@ -132,12 +133,13 @@ public class IngredientController {
     @PatchMapping("/{slug}")
     public ResponseEntity<Response> updatePartial(
         @PathVariable("slug") String slug,
-        @RequestBody @Valid SaveIngredientParameters body
+        @RequestBody @Valid UpdateIngredientPartialParameters body
     ) {
         Ingredient current = this.repository.findBySlug(slug)
             .orElseThrow(() -> new EntityNotFoundException("Could not find ingredient with specified slug in order to update it"));
 
-        body.slug() != null && current.setSlug(body.slug());
+        if (body.slug() != null) current.setSlug(body.slug());
+        if (body.name() != null) current.setName(body.name());
 
         Ingredient updated = this.repository.save(current);
 
