@@ -48,7 +48,6 @@ public class PizzeriaController {
             @RequestParam(value = "orderBy", defaultValue = "") String orderBy,
             @RequestParam(value = "order", defaultValue = "asc") String order
     ) {
-
         List<Pizzeria> all = this.repository.findAll();
 
         // pagination

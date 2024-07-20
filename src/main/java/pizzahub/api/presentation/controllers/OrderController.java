@@ -46,7 +46,7 @@ public class OrderController {
     private MenuItemRepository menuItemRepository;
 
     @GetMapping
-    public ResponseEntity<Response> fetchOrders(
+    public ResponseEntity<Response> fetchAll(
             @RequestParam(value = "page", defaultValue = "1") short page,
             @RequestParam(value = "perPage", defaultValue = "30") short perPage,
             @RequestParam(value = "orderBy", defaultValue = "") String orderBy,

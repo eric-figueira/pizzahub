@@ -1,5 +1,7 @@
 package pizzahub.api.entities.pizzeria.data;
 
+import java.util.List;
+
 public record PizzeriaResponse(
     Long id,
     Short code,
@@ -13,5 +15,6 @@ public record PizzeriaResponse(
     String uf,
     String complement,
     Short addressNumber,
-    Integer numberOfWorkers
+    Integer numberOfWorkers,
+    List<Long> workersIds
 ) {}
