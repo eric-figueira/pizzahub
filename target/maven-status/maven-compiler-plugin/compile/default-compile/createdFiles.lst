@@ -1,3 +1,5 @@
 pizzahub\api\entities\user\customer\data\CreateDeliveryCustomerParameters.class
 pizzahub\api\entities\user\customer\data\CustomerResponse.class
+pizzahub\api\mappers\CustomerMapperImpl.class
 pizzahub\api\entities\user\customer\data\CreateCustomerParameters.class
+pizzahub\api\mappers\CustomerMapper.class

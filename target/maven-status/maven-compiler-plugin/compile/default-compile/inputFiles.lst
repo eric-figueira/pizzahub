@@ -13,6 +13,7 @@ D:\GITHUB\pizzahub\src\main\java\pizzahub\api\ApiApplication.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\utils\RegexValidator.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\order\data\UpdateOrderParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\user\Role.java
+D:\GITHUB\pizzahub\src\main\java\pizzahub\api\mappers\CustomerMapper.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\user\customer\Customer.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\order\data\CreateOrderParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\pizzeria\data\PizzeriaResponse.java

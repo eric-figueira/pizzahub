@@ -3,7 +3,6 @@ package pizzahub.api.presentation.controllers;
 import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
-import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -13,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import pizzahub.api.entities.ingredient.Ingredient;
-import pizzahub.api.entities.ingredient.data.IngredientParameters;
+import pizzahub.api.entities.ingredient.data.SaveIngredientParameters;
 import pizzahub.api.mappers.IngredientMapper;
 import pizzahub.api.presentation.Response;
 import pizzahub.api.repositories.IngredientRepository;
@@ -22,10 +21,9 @@ import pizzahub.api.repositories.MenuItemRepository;
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController {
-    @Autowired
-    private IngredientRepository repository;
-    @Autowired
-    private MenuItemRepository menuItemRepository;
+    @Autowired private IngredientRepository repository;
+    @Autowired private MenuItemRepository menuItemRepository;
+    @Autowired private IngredientMapper mapper;
 
     @GetMapping
     public ResponseEntity<Response> fetchIngredients(
@@ -60,27 +58,26 @@ public class IngredientController {
                 .status(HttpStatus.OK)
                 .body(new Response(
                         "Successfully fetched all ingredients",
-                        paginated
+                        paginated.stream().map(this.mapper::fromEntityToResponse)
                 ));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Response> fetchById(@PathVariable("id") Long ingredientId) {
-        Ingredient ingredient = this.repository.findById(ingredientId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID"));
+    @GetMapping("/{slug}")
+    public ResponseEntity<Response> fetchBySlug(@PathVariable("slug") String slug) {
+        Ingredient ingredient = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified slug"));
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
-                "Successfully fetched ingredient with specified id",
-                IngredientMapper.modelToResponse(ingredient)
+                "Successfully fetched ingredient with specified slug",
+                this.mapper.fromEntityToResponse(ingredient)
             ));
     }
 
     @PostMapping
-    public ResponseEntity<Response> create(@RequestBody @Valid IngredientParameters body) {
-        Ingredient ingredient = new Ingredient();
-        ingredient.setName(body.name());
+    public ResponseEntity<Response> create(@RequestBody @Valid SaveIngredientParameters body) {
+        Ingredient ingredient = this.mapper.fromSaveParametersToEntity(body);
 
         Ingredient created = this.repository.save(ingredient);
 
@@ -88,14 +85,14 @@ public class IngredientController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully created new ingredient",
-                IngredientMapper.modelToResponse(created)
+                this.mapper.fromEntityToResponse(created)
             ));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Response> delete(@PathVariable("id") Long ingredientId) {
-        Ingredient ingredient = this.repository.findById(ingredientId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID in order to remove it"));
+    @DeleteMapping("/{slug}")
+    public ResponseEntity<Response> delete(@PathVariable("slug") String slug) {
+        Ingredient ingredient = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not find ingredient with specified slug in order to delete it"));
 
         this.menuItemRepository.findAll()
             .stream()
@@ -105,27 +102,22 @@ public class IngredientController {
                 menuItemRepository.save(item);
             });
 
-        this.repository.deleteById(ingredientId);
+        this.repository.deleteById(ingredient.getId());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new Response("Successfully deleted ingredient with specified id", null));
+                .body(new Response("Successfully deleted ingredient with specified slug", null));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{slug}")
     public ResponseEntity<Response> update(
-        @PathVariable("id") Long ingredientId,
-        @RequestBody @Valid IngredientParameters body
+        @PathVariable("slug") String slug,
+        @RequestBody @Valid SaveIngredientParameters body
     ) {
-        Ingredient current = this.repository.findById(ingredientId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not fetch ingredient with specified ID in order to update it"));
+        Ingredient current = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not find ingredient with specified slug in order to update it"));
 
-        if (body.name() != null) current.setName(body.name());
-        else {
-            throw new MissingResourceException(
-                "All ingredient fields must be informed", "Ingredient", ""
-            );
-        }
+        this.mapper.updateIngredient(current, body);
 
         Ingredient updated = this.repository.save(current);
 
@@ -133,7 +125,27 @@ public class IngredientController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated ingredient",
-                IngredientMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
+            ));
+    }
+
+    @PatchMapping("/{slug}")
+    public ResponseEntity<Response> updatePartial(
+        @PathVariable("slug") String slug,
+        @RequestBody @Valid SaveIngredientParameters body
+    ) {
+        Ingredient current = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not find ingredient with specified slug in order to update it"));
+
+        body.slug() != null && current.setSlug(body.slug());
+
+        Ingredient updated = this.repository.save(current);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully updated ingredient",
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 }

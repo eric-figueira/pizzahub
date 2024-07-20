@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 
 import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
-import pizzahub.api.entities.menuitem.data.CreateMenuItemParameters;
+import pizzahub.api.entities.menuitem.data.SaveMenuItemParameters;
 import pizzahub.api.entities.menuitem.data.UpdateMenuItemPartialParameters;
 
 import pizzahub.api.mappers.MenuItemMapper;
@@ -26,11 +26,9 @@ import pizzahub.api.presentation.Response;
 @RequestMapping(value = "/menuitems")
 public class MenuItemController {
 
+    @Autowired private MenuItemRepository repository;
+    @Autowired private IngredientRepository ingredientRepository;
     @Autowired
-    private MenuItemRepository repository;
-
-    @Autowired
-    private IngredientRepository ingredientRepository;
 
     @GetMapping
     public ResponseEntity<Response> fetchAll(
@@ -89,7 +87,7 @@ public class MenuItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> create(@RequestBody @Valid CreateMenuItemParameters body) {
+    public ResponseEntity<Response> create(@RequestBody @Valid SaveMenuItemParameters body) {
         MenuItem newMenuItem = new MenuItem();
         newMenuItem.setName(body.name());
         newMenuItem.setPrice(body.price());

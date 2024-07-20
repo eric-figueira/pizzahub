@@ -1,6 +1,9 @@
 package pizzahub.api.presentation;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,17 +40,16 @@ public class GlobalExceptionHandler {
             .body(new Response(ex.getMessage(), null));
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response> handleInvalidArgumentsExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Response> handleConstraintViolationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
-            .body(new Response(ex.getMessage(), errors));
+            .body(new Response("Some of the fields informed are not correct", errors));
     }
 
     @ExceptionHandler(Exception.class)
