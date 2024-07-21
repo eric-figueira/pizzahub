@@ -1,14 +1,13 @@
 package pizzahub.api.entities.menuitem.data;
 
-import pizzahub.api.entities.ingredient.Ingredient;
+import pizzahub.api.entities.ingredient.data.IngredientResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 public record MenuItemResponse(
-    Long id,
-    BigDecimal price,
+    String slug,
     String name,
-    List<Ingredient> ingredients
+    BigDecimal price,
+    List<IngredientResponse> ingredients
 ) {}

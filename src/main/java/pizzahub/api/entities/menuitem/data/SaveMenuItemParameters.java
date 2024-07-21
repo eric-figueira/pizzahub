@@ -7,9 +7,14 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record SaveMenuItemParameters(
+    @NotNull(message = "Slug cannot be null")
+    @NotBlank(message = "Slug cannot be empty")
+    @Size(min = 5, max = 40, message = "Slug must contain at least 3 and a max of 30 characters")
+    String slug,
+
     @NotNull(message = "Name cannot be null")
     @NotBlank(message = "Name cannot be empty")
-    @Size(min = 5, max = 35, message = "Name must contain at least 5 and a max of 35 characters")
+    @Size(min = 5, max = 40, message = "Name must contain at least 5 and a max of 35 characters")
     String name,
 
     @NotNull(message = "Price cannot be null")

@@ -1,5 +1,6 @@
 package pizzahub.api.presentation.controllers;
 
+import java.nio.channels.AlreadyConnectedException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class MenuItemController {
 
     @Autowired private MenuItemRepository repository;
     @Autowired private IngredientRepository ingredientRepository;
-    @Autowired
+    @Autowired private MenuItemMapper mapper;
 
     @GetMapping
     public ResponseEntity<Response> fetchAll(
@@ -67,30 +68,26 @@ public class MenuItemController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully fetched all menu items",
-                paginated.stream()
-                    .map(MenuItemMapper::modelToResponse)
-                    .collect(Collectors.toList())
+                this.mapper.fromEntityListToResponseList(paginated)
             ));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Response> fetchById(@PathVariable("id") Long menuItemId) {
-        MenuItem menuItem = this.repository.findById(menuItemId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not fetch menu item with specified ID"));
+    @GetMapping("/{slug}")
+    public ResponseEntity<Response> fetchBySlug(@PathVariable("slug") String slug) {
+        MenuItem menuItem = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not fetch menu item with specified slug"));
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
-                "Successfully fetched menu item with specified id",
-                MenuItemMapper.modelToResponse(menuItem)
+                "Successfully fetched menu item with specified slug",
+                this.mapper.fromEntityToResponse(menuItem)
             ));
     }
 
     @PostMapping
     public ResponseEntity<Response> create(@RequestBody @Valid SaveMenuItemParameters body) {
-        MenuItem newMenuItem = new MenuItem();
-        newMenuItem.setName(body.name());
-        newMenuItem.setPrice(body.price());
+        MenuItem menuItem = this.mapper.fromSaveParametersToEntity(body);
 
         List<Ingredient> ingredients = body.ingredientsIds()
             .stream()
@@ -99,37 +96,37 @@ public class MenuItemController {
                 .orElseThrow(() -> new EntityNotFoundException("Failed to retrieve one of the ingredients informed by ID")))
             .collect(Collectors.toList());
 
-        newMenuItem.setIngredients(ingredients);
+        menuItem.setIngredients(ingredients);
 
-        MenuItem created = this.repository.save(newMenuItem);
+        MenuItem created = this.repository.save(menuItem);
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully created new menu item",
-                MenuItemMapper.modelToResponse(created)
+                this.mapper.fromEntityToResponse(created)
             ));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Response> delete(@PathVariable("id") Long menuItemId) {
-        MenuItem exists = this.repository.findById(menuItemId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove it"));
+    @DeleteMapping("/{slug}")
+    public ResponseEntity<Response> delete(@PathVariable("slug") String slug) {
+        MenuItem exists = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified slug in order to remove it"));
 
-        this.repository.deleteById(menuItemId);
+        this.repository.deleteById(exists.getId());
 
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(new Response("Successfully deleted menu item with specified id", null));
+            .body(new Response("Successfully deleted menu item with specified slug", null));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{slug}")
     public ResponseEntity<Response> updatePartial(
-        @PathVariable("id") Long id,
+        @PathVariable("slug") String slug,
         @RequestBody @Valid UpdateMenuItemPartialParameters body
     ) {
-        MenuItem current = this.repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to update it"));
+        MenuItem current = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified slug in order to update it"));
 
         if (body.name()  != null) current.setName(body.name());
         if (body.price() != null) current.setPrice(body.price());
@@ -151,35 +148,28 @@ public class MenuItemController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated Menu Item",
-                MenuItemMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{slug}")
     public ResponseEntity<Response> update(
-        @PathVariable("id") Long id,
-        @RequestBody @Valid UpdateMenuItemPartialParameters body
+        @PathVariable("slug") String slug,
+        @RequestBody @Valid SaveMenuItemParameters body
     ) {
-        MenuItem current = this.repository.findById(id)
+        MenuItem current = this.repository.findBySlug(slug)
             .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to update it"));
 
-        if (body.name() != null && body.price() != null && body.ingredientsIds() != null) {
-            current.setName(body.name());
-            current.setPrice(body.price());
+        this.mapper.updateMenuItem(current, body);
 
-            List<Ingredient> ingredients = body.ingredientsIds()
-                .stream()
-                .map(ingredientId -> this.ingredientRepository
-                    .findById(ingredientId)
-                    .orElseThrow(EntityNotFoundException::new))
-                .collect(Collectors.toList());
+        List<Ingredient> ingredients = body.ingredientsIds()
+            .stream()
+            .map(ingredientId -> this.ingredientRepository
+                .findById(ingredientId)
+                .orElseThrow(EntityNotFoundException::new))
+            .collect(Collectors.toList());
 
-            current.setIngredients(ingredients);
-        } else {
-            throw new MissingResourceException(
-                "All menu item fields must be informed", "Menu Item", ""
-            );
-        }
+        current.setIngredients(ingredients);
 
         MenuItem updated = this.repository.save(current);
 
@@ -187,20 +177,23 @@ public class MenuItemController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated Menu Item",
-                MenuItemMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
-    @PatchMapping("{menuItemId}/ingredients/{ingredientId}")
+    @PatchMapping("{slug}/ingredients/{ingredientSlug}")
     public ResponseEntity<Response> addIngredient(
-        @PathVariable("menuItemId") Long id,
-        @PathVariable("ingredientId") Long ingredientId
+        @PathVariable("slug") String slug,
+        @PathVariable("ingredientSlug") String ingredientSlug
     ) {
-        MenuItem menuItem = this.repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to add the ingredient"));
+        MenuItem menuItem = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified slug in order to add the ingredient"));
 
-        Ingredient ingredient = this.ingredientRepository.findById(ingredientId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve ingredient with specified id in order to add it to the menu item"));
+        Ingredient ingredient = this.ingredientRepository.findBySlug(ingredientSlug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve ingredient with specified slug in order to add it to the menu item"));
+
+        if (menuItem.getIngredients().contains(ingredient))
+            throw new IllegalArgumentException("Menu item already contains specified ingredient");
 
         menuItem.getIngredients().add(ingredient);
         MenuItem updated = this.repository.save(menuItem);
@@ -208,21 +201,24 @@ public class MenuItemController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(new Response(
-                "Successfully add ingredient to menu item",
-                MenuItemMapper.modelToResponse(updated)
+                "Successfully added ingredient to menu item",
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
-    @DeleteMapping("{menuItemId}/ingredients/{ingredientId}")
+    @DeleteMapping("{slug}/ingredients/{ingredientSlug}")
     public ResponseEntity<Response> removeIngredient(
-        @PathVariable("menuItemId") Long id,
-        @PathVariable("ingredientId") Long ingredientId
+        @PathVariable("slug") String slug,
+        @PathVariable("ingredientSlug") String ingredientSlug
     ) {
-        MenuItem menuItem = this.repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified id in order to remove the ingredient"));
+        MenuItem menuItem = this.repository.findBySlug(slug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve menu item with specified slug in order to remove the ingredient"));
 
-        Ingredient ingredient = this.ingredientRepository.findById(ingredientId)
-            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve ingredient with specified id in order to remove it from the menu item"));
+        Ingredient ingredient = this.ingredientRepository.findBySlug(ingredientSlug)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve ingredient with specified slug in order to remove it from the menu item"));
+
+        if (!menuItem.getIngredients().contains(ingredient))
+            throw new NoSuchElementException("Menu item does not contain specified ingredient");
 
         menuItem.getIngredients().remove(ingredient);
         MenuItem updated = this.repository.save(menuItem);
@@ -231,7 +227,7 @@ public class MenuItemController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully removed ingredient from menu item",
-                MenuItemMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 }

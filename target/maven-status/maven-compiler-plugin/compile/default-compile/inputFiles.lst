@@ -34,11 +34,10 @@ D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\user\worker\data\UpdateWo
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\repositories\OrderRepository.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\pizzeria\data\CreatePizzeriaParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\infrastructure\cep\Address.java
-D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\menuitem\data\CreateMenuItemParameters.java
+D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\ingredient\data\UpdateIngredientPartialParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\repositories\WorkerRepository.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\pizzeria\data\UpdatePizzeriaPartialParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\order\PaymentMethod.java
-D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\menuitem\data\UpdateMenuItemParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\order\Order.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\infrastructure\cep\ViaCepClient.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\mappers\WorkerMapper.java
@@ -48,7 +47,8 @@ D:\GITHUB\pizzahub\src\main\java\pizzahub\api\mappers\PizzeriaMapper.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\user\customer\data\CreateCustomerParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\order\OrderStatus.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\presentation\controllers\PizzeriaController.java
-D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\ingredient\data\IngredientParameters.java
+D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\ingredient\data\SaveIngredientParameters.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\presentation\controllers\OrderController.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\repositories\CustomerRepository.java
 D:\GITHUB\pizzahub\src\main\java\pizzahub\api\presentation\GlobalExceptionHandler.java
+D:\GITHUB\pizzahub\src\main\java\pizzahub\api\entities\menuitem\data\SaveMenuItemParameters.java
