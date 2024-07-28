@@ -17,9 +17,8 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(unique = true)
-    private String slug;
+    @NotNull private String slug;
 
     @NotNull private String name;
 }

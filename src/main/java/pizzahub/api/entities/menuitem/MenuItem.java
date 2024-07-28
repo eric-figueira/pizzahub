@@ -43,6 +43,5 @@ public class MenuItem {
         joinColumns = @JoinColumn(name = "menu_item_id"),
         inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
-
     private List<Ingredient> ingredients;
 }
