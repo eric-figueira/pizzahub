@@ -14,7 +14,7 @@ import pizzahub.api.entities.pizzeria.data.SavePizzeriaParameters;
 import pizzahub.api.entities.pizzeria.data.UpdatePizzeriaPartialParameters;
 import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
-import pizzahub.api.entities.user.worker.data.UpdateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.SaveWorkerParameters;
 import pizzahub.api.entities.user.worker.data.UpdateWorkerPartialParameters;
 import pizzahub.api.infrastructure.cep.Address;
 import pizzahub.api.infrastructure.cep.ViaCepClient;
@@ -306,7 +306,7 @@ public class PizzeriaController {
     public ResponseEntity<Response> updateWorker(
         @PathVariable("code") Short code,
         @PathVariable("workerId") Long workerId,
-        @RequestBody @Valid UpdateWorkerParameters body
+        @RequestBody @Valid SaveWorkerParameters body
     ) {
         Pizzeria pizzeria = this.repository.findByCode(code)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch pizzeria with specified code"));

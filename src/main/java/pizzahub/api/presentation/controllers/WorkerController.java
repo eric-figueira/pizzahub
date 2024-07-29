@@ -1,8 +1,8 @@
 package pizzahub.api.presentation.controllers;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.worker.Worker;
-import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
 import pizzahub.api.entities.user.worker.data.UpdateWorkerPartialParameters;
-import pizzahub.api.entities.user.worker.data.WorkerResponse;
-import pizzahub.api.entities.user.worker.data.UpdateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.SaveWorkerParameters;
 import pizzahub.api.mappers.WorkerMapper;
 import pizzahub.api.repositories.PizzeriaRepository;
 import pizzahub.api.repositories.WorkerRepository;
@@ -25,14 +23,13 @@ import pizzahub.api.presentation.Response;
 @RestController
 @RequestMapping("/workers")
 public class WorkerController {
-    @Autowired
-    WorkerRepository repository;
 
-    @Autowired
-    PizzeriaRepository pizzeriaRepository;
+    @Autowired WorkerRepository repository;
+    @Autowired PizzeriaRepository pizzeriaRepository;
+    @Autowired WorkerMapper mapper;
 
     @GetMapping
-    public ResponseEntity<Response> fetchWorkers(
+    public ResponseEntity<Response> fetchAll(
         @RequestParam(value = "page", defaultValue = "1") short page,
         @RequestParam(value = "perPage", defaultValue = "30") short perPage
     ) {
@@ -58,14 +55,12 @@ public class WorkerController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully fetched all workers",
-                paginated.stream()
-                    .map(WorkerMapper::modelToResponse)
-                    .collect(Collectors.toList())
+                this.mapper.fromEntityListToResponseList(paginated)
             ));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response> fetchWorkerById(@PathVariable("id") Long id) {
+    public ResponseEntity<Response> fetchById(@PathVariable("id") UUID id) {
         Worker worker = this.repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Could not find worker with specified id"));
 
@@ -73,12 +68,18 @@ public class WorkerController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully fetched worker with specified id",
-                WorkerMapper.modelToResponse(worker)));
+                this.mapper.fromEntityToResponse(worker)));
     }
 
     @PostMapping
-    public ResponseEntity<Response> create(@RequestBody @Valid CreateWorkerParameters body) {
-        Worker worker = WorkerMapper.createParametersToModel(body);
+    public ResponseEntity<Response> create(@RequestBody @Valid SaveWorkerParameters body) {
+        Worker worker = this.mapper.fromSaveParametersToEntity(body);
+
+        Pizzeria pizzeria = this.pizzeriaRepository.findByCode(body.pizzeriaCode())
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve pizzeria with specified code"));
+
+        worker.setCreatedAt(new Date());
+        worker.setPizzeria(pizzeria);
 
         Worker created = this.repository.save(worker);
 
@@ -86,12 +87,12 @@ public class WorkerController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully created worker",
-               WorkerMapper.modelToResponse(created)
+               this.mapper.fromEntityToResponse(created)
             ));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Response> deleteWorker(@PathVariable("id") Long id) {
+    public ResponseEntity<Response> delete(@PathVariable("id") UUID id) {
         Worker exists = this.repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Could not find worker with specified id"));
 
@@ -104,18 +105,17 @@ public class WorkerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Response> update(
-        @PathVariable("id") Long id,
-        @RequestBody @Valid UpdateWorkerParameters body
+        @PathVariable("id") UUID id,
+        @RequestBody @Valid SaveWorkerParameters body
     ) {
         Worker current = this.repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
 
-        if (body.email() != null && body.fullname() != null && body.password() != null && body.role() != null) {
-            current.setEmail(body.email());
-            current.setFullname(body.fullname());
-            current.setPassword(body.password());
-            current.setRole(body.role());
-        }
+        Pizzeria pizzeria = this.pizzeriaRepository.findByCode(body.pizzeriaCode())
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve pizzeria with specified code"));
+
+        this.mapper.updateWorker(current, body);
+        current.setPizzeria(pizzeria);
 
         Worker updated = this.repository.save(current);
 
@@ -123,22 +123,26 @@ public class WorkerController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated worker",
-                WorkerMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
         ));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Response> updatePartial(
-        @PathVariable("id") Long id,
+        @PathVariable("id") UUID id,
         @RequestBody @Valid UpdateWorkerPartialParameters body
     ) {
         Worker current = this.repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch worker with specified id"));
 
         if (body.email() != null) current.setEmail(body.email());
-        if (body.fullname() != null) current.setFullname(body.fullname());
+        if (body.fullName() != null) current.setFullName(body.fullName());
         if (body.password() != null) current.setPassword(body.password());
         if (body.role() != null) current.setRole(body.role());
+
+        Pizzeria pizzeria = this.pizzeriaRepository.findByCode(body.pizzeriaCode())
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve pizzeria with specified code"));
+        current.setPizzeria(pizzeria);
 
         Worker updated = this.repository.save(current);
 
@@ -146,7 +150,7 @@ public class WorkerController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated worker",
-                WorkerMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 }

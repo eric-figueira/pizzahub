@@ -1,20 +1,15 @@
 package pizzahub.api.entities.user.worker.data;
 
-import jakarta.validation.constraints.NotNull;
 import pizzahub.api.entities.user.Role;
 
+import java.util.Date;
+import java.util.UUID;
+
 public record WorkerResponse(
-    @NotNull
-    Long id,
-
-    @NotNull
+    UUID id,
     String fullName,
-
-    @NotNull
     String email,
-
-    @NotNull
     Role role,
-
+    Date createdAt,
     Short pizzeriaCode
 ) {}

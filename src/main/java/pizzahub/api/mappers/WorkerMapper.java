@@ -1,26 +1,24 @@
 package pizzahub.api.mappers;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import pizzahub.api.entities.user.worker.Worker;
-import pizzahub.api.entities.user.worker.data.CreateWorkerParameters;
+import pizzahub.api.entities.user.worker.data.SaveWorkerParameters;
 import pizzahub.api.entities.user.worker.data.WorkerResponse;
 
-public class WorkerMapper {
-    public static WorkerResponse modelToResponse(Worker model) {
-        return new WorkerResponse(
-            model.getId(),
-            model.getFullname(),
-            model.getEmail(),
-            model.getRole(),
-            model.getPizzeria() != null ? model.getPizzeria().getCode() : null
-        );
-    }
+import java.util.List;
 
-    public static Worker createParametersToModel(CreateWorkerParameters parameters) {
-        return new Worker(
-            parameters.fullname(),
-            parameters.email(),
-            parameters.password(),
-            parameters.role()
-        );
-    }
+@Mapper(componentModel = "spring")
+public interface WorkerMapper {
+    WorkerResponse fromEntityToResponse(Worker entity);
+    List<WorkerResponse> fromEntityListToResponseList(List<Worker> list);
+
+    @Mapping(target = "pizzeria", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    Worker fromSaveParametersToEntity(SaveWorkerParameters parameters);
+
+    @Mapping(target = "pizzeria", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    void updateWorker(@MappingTarget Worker target, SaveWorkerParameters parameters);
 }
