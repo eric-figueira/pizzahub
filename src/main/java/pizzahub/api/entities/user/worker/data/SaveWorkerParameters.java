@@ -10,7 +10,7 @@ import pizzahub.api.entities.user.Role;
 public record SaveWorkerParameters(
     @NotNull(message = "Full name cannot be null")
     @NotBlank(message = "Full name cannot be empty")
-    @Size(min = 15, max = 50, message = "Full name must contain at least 15 and a max of 50 characters")
+    @Size(min = 10, max = 50, message = "Full name must contain at least 15 and a max of 50 characters")
     @JsonProperty("fullname")
     String fullName,
 
