@@ -2,6 +2,7 @@ package pizzahub.api.entities.pizzeria.data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public record PizzeriaResponse(
     Short code,
@@ -16,5 +17,5 @@ public record PizzeriaResponse(
     String complement,
     Short addressNumber,
     Date createdAt,
-    List<Long> workersIds
+    List<UUID> workersIds
 ) {}

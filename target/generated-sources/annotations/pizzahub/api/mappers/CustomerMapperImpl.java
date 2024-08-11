@@ -11,8 +11,8 @@ import pizzahub.api.entities.user.customer.data.SaveDeliveryCustomerParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-09T12:45:11-0300",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.39.0.v20240725-1906, environment: Java 17.0.11 (Eclipse Adoptium)"
+    date = "2024-08-11T15:20:17-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (BellSoft)"
 )
 @Component
 public class CustomerMapperImpl implements CustomerMapper {
@@ -25,8 +25,8 @@ public class CustomerMapperImpl implements CustomerMapper {
 
         Customer customer = new Customer();
 
-        customer.setCpf( parameters.cpf() );
         customer.setFullname( parameters.fullname() );
+        customer.setCpf( parameters.cpf() );
 
         return customer;
     }
@@ -39,13 +39,13 @@ public class CustomerMapperImpl implements CustomerMapper {
 
         Customer customer = new Customer();
 
-        customer.setAddressNumber( parameters.addressNumber() );
-        customer.setCep( parameters.cep() );
-        customer.setComplement( parameters.complement() );
+        customer.setFullname( parameters.fullname() );
         customer.setCpf( parameters.cpf() );
         customer.setEmail( parameters.email() );
-        customer.setFullname( parameters.fullname() );
         customer.setPassword( parameters.password() );
+        customer.setCep( parameters.cep() );
+        customer.setComplement( parameters.complement() );
+        customer.setAddressNumber( parameters.addressNumber() );
 
         return customer;
     }
@@ -106,8 +106,8 @@ public class CustomerMapperImpl implements CustomerMapper {
             return;
         }
 
-        target.setCpf( parameters.cpf() );
         target.setFullname( parameters.fullname() );
+        target.setCpf( parameters.cpf() );
     }
 
     @Override
@@ -116,12 +116,12 @@ public class CustomerMapperImpl implements CustomerMapper {
             return;
         }
 
-        target.setAddressNumber( parameters.addressNumber() );
-        target.setCep( parameters.cep() );
-        target.setComplement( parameters.complement() );
+        target.setFullname( parameters.fullname() );
         target.setCpf( parameters.cpf() );
         target.setEmail( parameters.email() );
-        target.setFullname( parameters.fullname() );
         target.setPassword( parameters.password() );
+        target.setCep( parameters.cep() );
+        target.setComplement( parameters.complement() );
+        target.setAddressNumber( parameters.addressNumber() );
     }
 }

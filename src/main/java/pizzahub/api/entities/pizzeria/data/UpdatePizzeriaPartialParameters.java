@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public record UpdatePizzeriaPartialParameters(
     @Min(value = 100, message = "Code cannot be equal or lower than 100")
@@ -44,5 +45,5 @@ public record UpdatePizzeriaPartialParameters(
 
     @NotEmpty(message = "Workers IDs list cannot be empty")
     @JsonProperty("workers_ids")
-    List<Long> workersIds
+    List<UUID> workersIds
 ) {}

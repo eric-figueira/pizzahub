@@ -11,8 +11,8 @@ import pizzahub.api.entities.pizzeria.data.SavePizzeriaParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-09T12:33:13-0300",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.39.0.v20240725-1906, environment: Java 17.0.11 (Eclipse Adoptium)"
+    date = "2024-08-11T15:20:18-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (BellSoft)"
 )
 @Component
 public class PizzeriaMapperImpl implements PizzeriaMapper {
@@ -64,12 +64,12 @@ public class PizzeriaMapperImpl implements PizzeriaMapper {
 
         Pizzeria pizzeria = new Pizzeria();
 
-        pizzeria.setAddressNumber( parameters.addressNumber() );
         pizzeria.setCode( parameters.code() );
-        pizzeria.setComplement( parameters.complement() );
-        pizzeria.setEmail( parameters.email() );
         pizzeria.setFirstContact( parameters.firstContact() );
         pizzeria.setSecondContact( parameters.secondContact() );
+        pizzeria.setEmail( parameters.email() );
+        pizzeria.setComplement( parameters.complement() );
+        pizzeria.setAddressNumber( parameters.addressNumber() );
 
         return pizzeria;
     }
@@ -94,11 +94,11 @@ public class PizzeriaMapperImpl implements PizzeriaMapper {
             return;
         }
 
-        target.setAddressNumber( parameters.addressNumber() );
         target.setCode( parameters.code() );
-        target.setComplement( parameters.complement() );
-        target.setEmail( parameters.email() );
         target.setFirstContact( parameters.firstContact() );
         target.setSecondContact( parameters.secondContact() );
+        target.setEmail( parameters.email() );
+        target.setComplement( parameters.complement() );
+        target.setAddressNumber( parameters.addressNumber() );
     }
 }

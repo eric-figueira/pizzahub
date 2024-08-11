@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
-// import java.util.UUID;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,11 +12,7 @@ import lombok.Getter;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
-import pizzahub.api.entities.order.data.CreateOrderParameters;
-import pizzahub.api.entities.order.data.OrderResponse;
-import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.customer.Customer;
 
 @Getter

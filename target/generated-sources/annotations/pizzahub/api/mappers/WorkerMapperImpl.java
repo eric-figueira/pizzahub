@@ -13,8 +13,8 @@ import pizzahub.api.entities.user.worker.data.WorkerResponse;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-09T12:33:13-0300",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.39.0.v20240725-1906, environment: Java 17.0.11 (Eclipse Adoptium)"
+    date = "2024-08-11T15:20:18-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (BellSoft)"
 )
 @Component
 public class WorkerMapperImpl implements WorkerMapper {
@@ -66,8 +66,8 @@ public class WorkerMapperImpl implements WorkerMapper {
 
         Worker worker = new Worker();
 
-        worker.setEmail( parameters.email() );
         worker.setFullName( parameters.fullName() );
+        worker.setEmail( parameters.email() );
         worker.setPassword( parameters.password() );
         worker.setRole( parameters.role() );
 
@@ -80,8 +80,8 @@ public class WorkerMapperImpl implements WorkerMapper {
             return;
         }
 
-        target.setEmail( parameters.email() );
         target.setFullName( parameters.fullName() );
+        target.setEmail( parameters.email() );
         target.setPassword( parameters.password() );
         target.setRole( parameters.role() );
     }
