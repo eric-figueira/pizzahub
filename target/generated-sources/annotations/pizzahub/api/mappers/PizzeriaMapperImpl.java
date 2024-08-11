@@ -3,6 +3,7 @@ package pizzahub.api.mappers;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 import pizzahub.api.entities.pizzeria.Pizzeria;
@@ -11,7 +12,7 @@ import pizzahub.api.entities.pizzeria.data.SavePizzeriaParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-11T15:20:18-0300",
+    date = "2024-08-11T16:16:13-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (BellSoft)"
 )
 @Component
@@ -49,7 +50,7 @@ public class PizzeriaMapperImpl implements PizzeriaMapper {
         addressNumber = entity.getAddressNumber();
         createdAt = entity.getCreatedAt();
 
-        List<Long> workersIds = null;
+        List<UUID> workersIds = null;
 
         PizzeriaResponse pizzeriaResponse = new PizzeriaResponse( code, firstContact, secondContact, email, cep, streetName, neighborhood, city, uf, complement, addressNumber, createdAt, workersIds );
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import pizzahub.api.entities.ingredient.Ingredient;
 import pizzahub.api.entities.menuitem.MenuItem;
 import pizzahub.api.entities.order.data.UpdateOrderParameters;
 import pizzahub.api.entities.order.data.UpdateOrderPartialParameters;
@@ -36,14 +37,12 @@ import pizzahub.api.presentation.Response;
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
-    @Autowired
-    private OrderRepository repository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private MenuItemRepository menuItemRepository;
+    @Autowired private OrderRepository repository;
+    @Autowired private CustomerRepository customerRepository;
+    @Autowired private MenuItemRepository menuItemRepository;
+    @Autowired private OrderMapper mapper;
+    @Autowired private MenuItemMapper menuItemMapper;
 
     @GetMapping
     public ResponseEntity<Response> fetchAll(
@@ -114,7 +113,7 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully fetched all orders",
-                paginated
+                this.mapper.fromEntityListToResponseList(paginated)
             ));
     }
 
@@ -127,27 +126,35 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully fetched order with specified number",
-                OrderMapper.modelToResponse(order)));
+                this.mapper.fromEntityToResponse(order)
+            ));
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Response> create(@RequestBody @Valid CreateOrderParameters body) {
-        Order order = new Order();
-        order.setNumber(body.number());
-        if (body.paymentMethod() != null) order.setPaymentMethod(body.paymentMethod());
-        if (body.shippingTax() != null) order.setShippingTax(body.shippingTax());
-        order.setCost(body.cost());
+        Order order = this.mapper.fromCreateParametersToEntity(body);
 
         Customer customer = this.customerRepository
                             .findById(body.customerId())
                             .orElseThrow(() -> new EntityNotFoundException(
                                 "Failed to retrieve customer informed by ID"
                             ));
+
         order.setCustomer(customer);
+
+        if (body.paymentMethod() != null) order.setPaymentMethod(body.paymentMethod());
 
         order.setOrderStatus(OrderStatus.PENDING);
         order.setOrderDate(new Date());
         order.setOrderTime(LocalTime.now());
+
+        List<MenuItem> items = body.menuItemsSlugs()
+            .stream()
+            .map(slug -> this.menuItemRepository
+                .findBySlug(slug)
+                .orElseThrow(EntityNotFoundException::new)).toList();
+
+        order.setMenuItems(items);
 
         Order created = this.repository.save(order);
 
@@ -155,16 +162,16 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully created new order",
-                OrderMapper.modelToResponse(created)
+                this.mapper.fromEntityToResponse(created)
             ));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Response> delete(@PathVariable("id") Long orderId) {
-        Order exists = this.repository.findById(orderId)
+    @DeleteMapping("/{number}")
+    public ResponseEntity<Response> delete(@PathVariable("number") Short number) {
+        Order exists = this.repository.findByNumber(number)
             .orElseThrow(() -> new EntityNotFoundException("Could not fetch order with specified number"));
 
-        this.repository.deleteById(orderId);
+        this.repository.deleteById(exists.getId());
 
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -198,7 +205,7 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated order",
-                OrderMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
@@ -231,11 +238,24 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully updated order",
-                OrderMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
-    @PostMapping("{orderNumber}/menuitem/{menuItemId}")
+    @GetMapping("{number}/items")
+    public ResponseEntity<Response> listMenuItems(@PathVariable("number") Short number) {
+        Order order = this.repository.findByNumber(number)
+            .orElseThrow(() -> new EntityNotFoundException("Could not retrieve order with specified number in order to add the menu item"));
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(new Response(
+                "Successfully listed order's items",
+                this.menuItemMapper.fromEntityListToResponseList(order.getMenuItems())
+            ));
+    }
+
+    @PostMapping("{orderNumber}/items/{menuItemId}")
     public ResponseEntity<Response> addMenuItem(
         @PathVariable("orderNumber") Short orderNumber,
         @PathVariable("menuItemId") Long menuItemId
@@ -253,11 +273,11 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully add menu item to order",
-                OrderMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
-    @DeleteMapping("{orderNumber}/menuitem/{menuItemId}")
+    @DeleteMapping("{orderNumber}/items/{menuItemId}")
     public ResponseEntity<Response> removeMenuItem(
         @PathVariable("orderNumber") Short orderNumber,
         @PathVariable("menuItemId") Long menuItemId
@@ -275,7 +295,7 @@ public class OrderController {
             .status(HttpStatus.OK)
             .body(new Response(
                 "Successfully removed menu item from menu item",
-                OrderMapper.modelToResponse(updated)
+                this.mapper.fromEntityToResponse(updated)
             ));
     }
 
