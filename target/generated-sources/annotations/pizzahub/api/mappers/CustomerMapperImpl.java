@@ -11,8 +11,8 @@ import pizzahub.api.entities.user.customer.data.SaveDeliveryCustomerParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-11T16:16:13-0300",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (BellSoft)"
+    date = "2024-08-14T09:08:31-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (Azul Systems, Inc.)"
 )
 @Component
 public class CustomerMapperImpl implements CustomerMapper {

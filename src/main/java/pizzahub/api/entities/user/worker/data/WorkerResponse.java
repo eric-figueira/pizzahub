@@ -1,5 +1,6 @@
 package pizzahub.api.entities.user.worker.data;
 
+import org.mapstruct.Mapping;
 import pizzahub.api.entities.user.Role;
 
 import java.util.Date;

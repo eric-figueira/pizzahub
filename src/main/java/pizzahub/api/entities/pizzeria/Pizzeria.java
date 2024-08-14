@@ -30,10 +30,10 @@ public class Pizzeria {
 
     @NotNull private String email;
     @NotNull private String cep;
-    @NotNull private String streetName;
-    @NotNull private String neighborhood;
-    @NotNull private String city;
-    @NotNull private String uf;
+    private String streetName;
+    private String neighborhood;
+    private String city;
+    private String uf;
 
     private String complement;
 

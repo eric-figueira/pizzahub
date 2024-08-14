@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
+import pizzahub.api.entities.pizzeria.Pizzeria;
 import pizzahub.api.entities.user.Role;
 import pizzahub.api.entities.user.worker.Worker;
 import pizzahub.api.entities.user.worker.data.SaveWorkerParameters;
@@ -13,8 +14,8 @@ import pizzahub.api.entities.user.worker.data.WorkerResponse;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-11T16:16:13-0300",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (BellSoft)"
+    date = "2024-08-14T09:08:31-0300",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (Azul Systems, Inc.)"
 )
 @Component
 public class WorkerMapperImpl implements WorkerMapper {
@@ -25,19 +26,19 @@ public class WorkerMapperImpl implements WorkerMapper {
             return null;
         }
 
+        Short pizzeriaCode = null;
         UUID id = null;
         String fullName = null;
         String email = null;
         Role role = null;
         Date createdAt = null;
 
+        pizzeriaCode = entityPizzeriaCode( entity );
         id = entity.getId();
         fullName = entity.getFullName();
         email = entity.getEmail();
         role = entity.getRole();
         createdAt = entity.getCreatedAt();
-
-        Short pizzeriaCode = null;
 
         WorkerResponse workerResponse = new WorkerResponse( id, fullName, email, role, createdAt, pizzeriaCode );
 
@@ -84,5 +85,20 @@ public class WorkerMapperImpl implements WorkerMapper {
         target.setEmail( parameters.email() );
         target.setPassword( parameters.password() );
         target.setRole( parameters.role() );
+    }
+
+    private Short entityPizzeriaCode(Worker worker) {
+        if ( worker == null ) {
+            return null;
+        }
+        Pizzeria pizzeria = worker.getPizzeria();
+        if ( pizzeria == null ) {
+            return null;
+        }
+        Short code = pizzeria.getCode();
+        if ( code == null ) {
+            return null;
+        }
+        return code;
     }
 }

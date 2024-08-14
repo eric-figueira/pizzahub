@@ -1,9 +1,0 @@
-pizzahub\api\mappers\MenuItemMapperImpl.class
-pizzahub\api\entities\ingredient\data\SaveIngredientParameters.class
-pizzahub\api\entities\user\customer\data\CustomerResponse.class
-pizzahub\api\entities\menuitem\data\SaveMenuItemParameters.class
-pizzahub\api\entities\ingredient\data\UpdateIngredientPartialParameters.class
-pizzahub\api\mappers\CustomerMapperImpl.class
-pizzahub\api\mappers\CustomerMapper.class
-pizzahub\api\mappers\OrderMapperImpl.class
-pizzahub\api\mappers\IngredientMapperImpl.class

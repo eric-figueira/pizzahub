@@ -11,6 +11,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface WorkerMapper {
+    @Mapping(source = "pizzeria.code", target = "pizzeriaCode")
     WorkerResponse fromEntityToResponse(Worker entity);
     List<WorkerResponse> fromEntityListToResponseList(List<Worker> list);
 
