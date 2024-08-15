@@ -2,6 +2,7 @@ package pizzahub.api.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 import pizzahub.api.entities.user.customer.Customer;
@@ -11,7 +12,7 @@ import pizzahub.api.entities.user.customer.data.SaveDeliveryCustomerParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-14T09:08:31-0300",
+    date = "2024-08-15T08:17:04-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (Azul Systems, Inc.)"
 )
 @Component
@@ -25,7 +26,6 @@ public class CustomerMapperImpl implements CustomerMapper {
 
         Customer customer = new Customer();
 
-        customer.setFullname( parameters.fullname() );
         customer.setCpf( parameters.cpf() );
 
         return customer;
@@ -39,7 +39,6 @@ public class CustomerMapperImpl implements CustomerMapper {
 
         Customer customer = new Customer();
 
-        customer.setFullname( parameters.fullname() );
         customer.setCpf( parameters.cpf() );
         customer.setEmail( parameters.email() );
         customer.setPassword( parameters.password() );
@@ -56,7 +55,8 @@ public class CustomerMapperImpl implements CustomerMapper {
             return null;
         }
 
-        String fullname = null;
+        UUID id = null;
+        String fullName = null;
         String cpf = null;
         String email = null;
         String cep = null;
@@ -67,7 +67,8 @@ public class CustomerMapperImpl implements CustomerMapper {
         String complement = null;
         Short addressNumber = null;
 
-        fullname = entity.getFullname();
+        id = entity.getId();
+        fullName = entity.getFullName();
         cpf = entity.getCpf();
         email = entity.getEmail();
         cep = entity.getCep();
@@ -78,10 +79,7 @@ public class CustomerMapperImpl implements CustomerMapper {
         complement = entity.getComplement();
         addressNumber = entity.getAddressNumber();
 
-        Integer numberOfOrders = null;
-        List<Short> ordersNumbers = null;
-
-        CustomerResponse customerResponse = new CustomerResponse( fullname, cpf, email, cep, streetName, neighborhood, city, uf, complement, addressNumber, numberOfOrders, ordersNumbers );
+        CustomerResponse customerResponse = new CustomerResponse( id, fullName, cpf, email, cep, streetName, neighborhood, city, uf, complement, addressNumber );
 
         return customerResponse;
     }
@@ -106,7 +104,6 @@ public class CustomerMapperImpl implements CustomerMapper {
             return;
         }
 
-        target.setFullname( parameters.fullname() );
         target.setCpf( parameters.cpf() );
     }
 
@@ -116,7 +113,6 @@ public class CustomerMapperImpl implements CustomerMapper {
             return;
         }
 
-        target.setFullname( parameters.fullname() );
         target.setCpf( parameters.cpf() );
         target.setEmail( parameters.email() );
         target.setPassword( parameters.password() );

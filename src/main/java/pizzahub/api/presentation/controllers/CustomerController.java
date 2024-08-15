@@ -48,32 +48,38 @@ public class CustomerController {
             @RequestParam(value = "order", defaultValue = "asc") String order) {
         List<Customer> all = this.repository.findAll();
 
+        System.out.println("OASDOASDOADOASD");
+
+        // pagination
         short start = (short) ((page - 1) * perPage);
 
-        double numberOfGroups = (double) (all.size() / perPage);
-        short lastGroupNumber = (short) (Math.ceil(numberOfGroups));
+        double numberOfGroups = (double) all.size() / perPage;
+        short lastGroupNumber = (short) Math.ceil(numberOfGroups);
 
         short end = page == lastGroupNumber ? (short) all.size() : (short) (page * perPage);
 
         if (start >= all.size()) {
             throw new IllegalArgumentException(
-                    "The pagination parameters are invalid. Please ensure that 'page' is smaller than the total data size");
+                "The pagination parameters are invalid. Please ensure that 'page' is smaller than the total data size"
+            );
         }
 
         List<Customer> paginated = all.subList(start, end);
 
         if ("fullname".equals(orderBy)) {
             if (order.equalsIgnoreCase("asc"))
-                paginated.sort(Comparator.comparing(Customer::getFullname));
+                paginated.sort(Comparator.comparing(Customer::getFullName));
             else
-                paginated.sort(Comparator.comparing(Customer::getFullname).reversed());
+                paginated.sort(Comparator.comparing(Customer::getFullName).reversed());
         }
+
+        System.out.println("56756L75K6L7567");
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response(
                         "Successfully fetched all customers",
-                        this.mapper.fromEntityListToResponseList(paginated)));
+                        paginated));
     }
 
     @GetMapping("/{id}")
@@ -143,7 +149,7 @@ public class CustomerController {
                         "Could not fetch customer with specified id in order to update it"));
 
         if (body.fullname() != null)
-            customer.setFullname(body.fullname());
+            customer.setFullName(body.fullname());
         if (body.email() != null)
             customer.setEmail(body.email());
         if (body.password() != null)

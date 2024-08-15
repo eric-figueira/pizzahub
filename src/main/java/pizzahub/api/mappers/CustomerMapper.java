@@ -18,8 +18,8 @@ public interface CustomerMapper {
 
     Customer fromCreateDeliveryParametersToEntity(SaveDeliveryCustomerParameters parameters);
 
-    @Mapping(target = "numberOfOrders", ignore = true)
-    @Mapping(target = "ordersNumbers", ignore = true)
+    //@Mapping(target = "numberOfOrders", ignore = true)
+    //@Mapping(target = "ordersNumbers", ignore = true)
     CustomerResponse fromEntityToResponse(Customer entity);
 
     List<CustomerResponse> fromEntityListToResponseList(List<Customer> list);

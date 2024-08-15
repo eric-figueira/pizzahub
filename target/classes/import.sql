@@ -1,12 +1,12 @@
-insert into customer (fullname, cpf) values ('Eliza Palmer', '106.101.244-23');
-insert into customer (fullname, cpf) values ('Lester Walsh', '164.219.243-24');
-insert into customer (fullname, cpf) values ('Lelia Yates', '201.116.237-91');
-insert into customer (fullname, cpf) values ('Elizabeth Abbott', '200.46.95-39');
+insert into customer (id, full_name, cpf) values ('ba103a99-7bf0-4d00-901d-4f35d852896d', 'Eliza Palmer', '106.101.244-23');
+insert into customer (id, full_name, cpf) values ('45c5c032-e9e4-467c-bb4d-16422661efbe', 'Lester Walsh', '164.219.243-24');
+insert into customer (id, full_name, cpf) values ('1b168c63-5f3a-4495-8f79-9809468f1973', 'Lelia Yates', '201.116.237-91');
+insert into customer (id, full_name, cpf) values ('85eaffd8-7909-4f26-9813-45c6c8d77ee4', 'Elizabeth Abbott', '200.46.95-39');
 
-insert into customer (fullname, email, password, cep, house_number, house_complement) values ('Clyde Stanley', 'mavku@mojje.eg', 'JtdRWqT129', '35505-531', '23', 'House');
-insert into customer (fullname, email, password, cep, house_number, house_complement) values ('Edwin Edwards', 'zemzaf@ahu.ck', 'LHNG46IzsCg500P', '75223-713', '120A', 'Apartment');
-insert into customer (fullname, email, password, cep, house_number, house_complement) values ('Dean Glover', 'pik@ruce.kz', 'vHw7jL', '43939-394', '863', 'House');
-insert into customer (fullname, email, password, cep, house_number, house_complement) values ('James Sullivan', 'va@zatpuspof.jo', 'uQPwkSqMzXID773R9U', '83285-762', '15B', 'Apartment');
+insert into customer (id, full_name, email, password, cep, house_number, house_complement) values ('c8dadecb-bbd3-4e9d-b49a-141922f3a673', 'Clyde Stanley', 'mavku@mojje.eg', 'JtdRWqT129', '35505-531', '23', 'House');
+insert into customer (id, full_name, email, password, cep, house_number, house_complement) values ('08862b4d-aff7-4867-84df-94b35bdf1c98', 'Edwin Edwards', 'zemzaf@ahu.ck', 'LHNG46IzsCg500P', '75223-713', '120A', 'Apartment');
+insert into customer (id, full_name, email, password, cep, house_number, house_complement) values ('5d9c0196-0c94-4953-b10a-bb736052e23c', 'Dean Glover', 'pik@ruce.kz', 'vHw7jL', '43939-394', '863', 'House');
+insert into customer (id, full_name, email, password, cep, house_number, house_complement) values ('61f3ecc8-9252-4a9e-9798-54c9b72e4e62', 'James Sullivan', 'va@zatpuspof.jo', 'uQPwkSqMzXID773R9U', '83285-762', '15B', 'Apartment');
 
 insert into menu_item (price, slug, name) values (35.0, 'margherita', 'Margherita')
 insert into menu_item (price, slug, name) values (40.0, 'calabresa', 'Calabresa')

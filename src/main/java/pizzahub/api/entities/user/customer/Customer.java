@@ -25,7 +25,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String fullname;
+    private String fullName;
 
     // For presential orders only. Null when the order is by delivery
     private String cpf;

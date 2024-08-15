@@ -1,5 +1,7 @@
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:21-jdk-jammy
 
 COPY target/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
+
+EXPOSE 8080
