@@ -12,7 +12,7 @@ import pizzahub.api.entities.user.customer.data.SaveDeliveryCustomerParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-15T09:43:03-0300",
+    date = "2024-08-15T10:27:40-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (Azul Systems, Inc.)"
 )
 @Component
@@ -79,7 +79,10 @@ public class CustomerMapperImpl implements CustomerMapper {
         complement = entity.getComplement();
         addressNumber = entity.getAddressNumber();
 
-        CustomerResponse customerResponse = new CustomerResponse( id, fullName, cpf, email, cep, streetName, neighborhood, city, uf, complement, addressNumber );
+        Integer numberOfOrders = entity.getOrders() != null ? entity.getOrders().size() : 0;
+        List<Short> ordersNumbers = getOrdersNumbers(entity);
+
+        CustomerResponse customerResponse = new CustomerResponse( id, fullName, cpf, email, cep, streetName, neighborhood, city, uf, complement, addressNumber, numberOfOrders, ordersNumbers );
 
         return customerResponse;
     }

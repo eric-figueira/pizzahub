@@ -14,7 +14,7 @@ public record CustomerResponse(
     String city,
     String uf,
     String complement,
-    Short addressNumber
-    // Integer numberOfOrders,
-    // List<Short> ordersNumbers
+    Short addressNumber,
+    Integer numberOfOrders,
+    List<Short> ordersNumbers
 ) {}

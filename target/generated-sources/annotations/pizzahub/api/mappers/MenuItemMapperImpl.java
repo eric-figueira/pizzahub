@@ -13,7 +13,7 @@ import pizzahub.api.entities.menuitem.data.SaveMenuItemParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-15T09:43:03-0300",
+    date = "2024-08-15T10:27:39-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (Azul Systems, Inc.)"
 )
 @Component
