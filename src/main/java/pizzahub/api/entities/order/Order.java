@@ -50,5 +50,5 @@ public class Order {
         joinColumns = @JoinColumn(name = "order_id"),
         inverseJoinColumns = @JoinColumn(name = "menu_item_id")
     )
-    @NotNull private List<MenuItem> menuItems;
+    private List<MenuItem> menuItems;
 }

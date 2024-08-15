@@ -57,4 +57,4 @@ insert into pizzeria (code, first_contact, second_contact, email, cep, address_n
 
 insert into worker (id, full_name, email, password, created_at, role, pizzeria_code) values ('81881bab-dac9-49a4-945c-63f6a96d52fc', 'Catherine Osborne', 'demivejec@jusnu.gov', 'Z9uanWj8gXRhxV', '2021-10-01','ANONYMOUS', 1)
 
-insert into "order" (number, customer_id, order_date, order_time, shipping_tax, payment_method, order_status) values (123, 1, '2024-06-03', '14:30:00', 10.50, 'CREDIT_CARD', 'IN_PROGRESS')
+insert into "order" (number, order_date, order_time, cost, payment_method, order_status, customer_id) values (123, '2024-06-03', '14:30:00', 10.50, 'CREDIT_CARD', 'PREPARING', 'ba103a99-7bf0-4d00-901d-4f35d852896d')

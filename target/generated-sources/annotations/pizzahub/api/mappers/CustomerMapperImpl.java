@@ -12,7 +12,7 @@ import pizzahub.api.entities.user.customer.data.SaveDeliveryCustomerParameters;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-08-15T08:17:04-0300",
+    date = "2024-08-15T09:43:03-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19.0.2 (Azul Systems, Inc.)"
 )
 @Component

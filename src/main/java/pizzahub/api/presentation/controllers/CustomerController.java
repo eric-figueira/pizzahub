@@ -48,8 +48,6 @@ public class CustomerController {
             @RequestParam(value = "order", defaultValue = "asc") String order) {
         List<Customer> all = this.repository.findAll();
 
-        System.out.println("OASDOASDOADOASD");
-
         // pagination
         short start = (short) ((page - 1) * perPage);
 
@@ -73,13 +71,11 @@ public class CustomerController {
                 paginated.sort(Comparator.comparing(Customer::getFullName).reversed());
         }
 
-        System.out.println("56756L75K6L7567");
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new Response(
                         "Successfully fetched all customers",
-                        paginated));
+                        this.mapper.fromEntityListToResponseList(paginated)));
     }
 
     @GetMapping("/{id}")
