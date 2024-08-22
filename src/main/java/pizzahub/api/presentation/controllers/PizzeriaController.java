@@ -93,6 +93,7 @@ public class PizzeriaController {
         String cep = body.cep();
 
         Address address = cepClient.fetchAddressByCep(cep);
+        pizzeria.setCep(cep);
         pizzeria.setCity(address.getCidade());
         pizzeria.setNeighborhood(address.getBairro());
         pizzeria.setUf(address.getEstado());
@@ -108,6 +109,8 @@ public class PizzeriaController {
 
             pizzeria.setWorkers(workers);
         }
+
+        pizzeria.setCreatedAt(new Date());
 
         Pizzeria created = this.repository.save(pizzeria);
 

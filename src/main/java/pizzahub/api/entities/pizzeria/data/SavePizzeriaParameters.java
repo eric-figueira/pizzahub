@@ -1,7 +1,9 @@
 package pizzahub.api.entities.pizzeria.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
+import pizzahub.api.presentation.validators.NullableNotEmpty.NullableNotEmpty;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,13 +44,14 @@ public record SavePizzeriaParameters(
     String complement,
 
     @NotNull(message = "Address number cannot be null")
-    @NotBlank(message = "Address number cannot be empty")
-    @Min(value = 1, message = "Address number cannot be equal or lower than 0")
+    @Min(value = 0, message = "Address number cannot be equal or lower than 0")
     @Max(value = 32000, message = "Address number cannot be grater than 32000")
     @JsonProperty("address_number")
     Short addressNumber,
 
-    @NotEmpty(message = "Workers IDs list cannot be empty")
+
+    @NullableNotEmpty(message = "Workers IDs list cannot be empty if provided")
+
     @JsonProperty("workers_ids")
     List<UUID> workersIds
 ) {}

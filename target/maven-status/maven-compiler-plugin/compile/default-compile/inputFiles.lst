@@ -2,6 +2,7 @@
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/entities/user/customer/data/UpdateCustomerPartialParameters.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/repositories/WorkerRepository.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/entities/order/PaymentMethod.java
+/Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/presentation/validators/NullableNotEmpty/NullableNotEmptyValidator.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/entities/pizzeria/data/UpdatePizzeriaPartialParameters.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/entities/ingredient/data/UpdateIngredientPartialParameters.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/entities/pizzeria/data/SavePizzeriaParameters.java
@@ -13,6 +14,7 @@
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/mappers/MenuItemMapper.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/entities/pizzeria/Pizzeria.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/repositories/CustomerRepository.java
+/Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/presentation/validators/NullableNotEmpty/NullableNotEmpty.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/mappers/WorkerMapper.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/mappers/IngredientMapper.java
 /Users/u22156/Documents/GitHub/pizzahub/src/main/java/pizzahub/api/mappers/CustomerMapper.java

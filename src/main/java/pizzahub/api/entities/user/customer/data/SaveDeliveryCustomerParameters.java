@@ -1,5 +1,6 @@
 package pizzahub.api.entities.user.customer.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +12,7 @@ public record SaveDeliveryCustomerParameters(
     @NotNull(message = "Fullname cannot be null")
     @NotBlank(message = "Fullname cannot be blank")
     @Size(min = 10, max = 50, message = "Fullname must contain at least 10 and a max of 50 characters")
-    String fullname,
+    String fullName,
 
     @NotNull(message = "Cpf cannot be null")
     @NotBlank(message = "Cpf cannot be blank")
@@ -38,9 +39,9 @@ public record SaveDeliveryCustomerParameters(
     @Size(min = 3, max = 30, message = "Address complement must contain at least 3 and a max of 30 characters")
     String complement,
 
-    @NotNull(message = "Addresss number cannot be null")
-    @NotBlank(message = "Address number cannot be blank")
+    @NotNull(message = "Address number cannot be null")
     @Min(value = 1, message = "Address number cannot be equal or lower than 0")
     @Max(value = 32000, message = "Address number cannot be grater than 32000")
+    @JsonProperty(value = "address_number")
     Short addressNumber
 ) {}
